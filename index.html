@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AP Performance Dashboard · Reglas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eef2f7 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            padding: 32px 24px;
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #0A2540;
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .header h1 {
+            color: white;
+            font-weight: 600;
+            font-size: 1.75rem;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1::before {
+            content: "📊";
+            font-size: 1.8rem;
+        }
+
+        .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            background: #FFFFFF;
+            padding: 0 2rem;
+            gap: 0.25rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 1rem 1.8rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #4a5b6e;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: -1px;
+        }
+
+        .tab-btn:hover {
+            color: #0A2540;
+            background: #f1f5f9;
+        }
+
+        .tab-btn.active {
+            color: #0A2540;
+            background: white;
+            border-bottom: 3px solid #2B7A4B;
+            font-weight: 700;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem 2rem 2.5rem 2rem;
+            background: #ffffff;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .card {
+            background: #fefefe;
+            border-radius: 1.5rem;
+            border: 1px solid #eef2f6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0f172a;
+            border-left: 5px solid #2B7A4B;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .dropzone-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 1.2rem;
+            background: #fafcff;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+        
+        .dropzone-area.drag-over {
+            border-color: #2B7A4B;
+            background: #eef9f0;
+            transform: scale(0.99);
+        }
+
+        .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #0A2540;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 12px;
+            border: none;
+        }
+
+        .file-input-label:hover {
+            background: #1f4b6e;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 1rem;
+            border: 1px solid #e9edf2;
+            background: white;
+            margin-top: 1rem;
+            max-height: 550px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #1e293b;
+            padding: 12px 10px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #f1f5f9;
+        }
+
+        td {
+            padding: 10px 8px;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        .th-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .th-content:hover {
+            color: #0A2540;
+        }
+
+        .filter-icon {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+
+        .th-content:hover .filter-icon {
+            color: #2B7A4B;
+        }
+
+        .filter-icon.active {
+            color: #2B7A4B;
+        }
+
+        .filter-dropdown {
+            position: fixed;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 200px;
+            max-width: 280px;
+        }
+
+        .filter-header {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #1e293b;
+            background: #f8fafc;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .filter-search {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .filter-search input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.7rem;
+        }
+
+        .filter-options {
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .filter-option:hover {
+            background: #f1f5f9;
+        }
+
+        .filter-option input {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .filter-option label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .filter-actions {
+            padding: 8px 12px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            font-size: 0.7rem;
+        }
+
+        .filter-actions button {
+            background: none;
+            border: none;
+            color: #2B7A4B;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .filter-actions button:hover {
+            text-decoration: underline;
+        }
+
+        .stat-grid {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            flex: 1;
+            min-width: 150px;
+            border-left: 4px solid #2B7A4B;
+        }
+
+        .select-modern {
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-weight: 500;
+            margin-left: 12px;
+            cursor: pointer;
+        }
+
+        .alert-info {
+            background: #e6f7ec;
+            border-radius: 16px;
+            padding: 12px 18px;
+            color: #14532d;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .warning-box {
+            background: #fef9e6;
+            border-left: 4px solid #e67e22;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-warning {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-warning:hover {
+            background: #d35400;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .empty-row td {
+            text-align: center;
+            color: #6c757d;
+            padding: 2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.7rem;
+            color: #5b6e8c;
+            border-top: 1px solid #e2edf7;
+            background: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .empty-placeholder {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .active-filter {
+            color: #2B7A4B !important;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            padding: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #cbd5e1;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-info {
+            font-size: 0.8rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+/* Estilos para la tabla de consolidado */
+.consolidado-tabla {
+    position: relative;
+}
+
+.consolidado-tabla thead tr:first-child th {
+    background: #f1f5f9;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+.consolidado-tabla thead tr:last-child th {
+    background: #f1f5f9;
+    font-weight: 600;
+    position: sticky;
+    top: 41px; /* Ajusta este valor según la altura real de la primera fila */
+    z-index: 15;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.consolidado-tabla td:first-child,
+.consolidado-tabla th:first-child {
+    position: sticky;
+    left: 0;
+    background: #f1f5f9;
+    font-weight: 600;
+    text-align: left;
+    z-index: 10;
+}
+
+/* Para que la primera columna también sea sticky cuando hay scroll horizontal */
+.consolidado-tabla thead tr:first-child th:first-child {
+    z-index: 30;
+}
+
+.consolidado-tabla thead tr:last-child th:first-child {
+    z-index: 25;
+}
+
+
+    </style>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <h1>AP Performance Dashboard</h1>
+    </div>
+
+    <div class="tabs-nav">
+        <button class="tab-btn" data-tab="consolidado">📋 Consolidado</button>
+        <button class="tab-btn" data-tab="dashboard">📈 Dashboard</button>
+        <button class="tab-btn" data-tab="basedatos">🗄️ Base de Datos</button>
+        <button class="tab-btn" data-tab="reglas">⚙️ Reglas</button>
+        <button class="tab-btn" data-tab="cargabatch">📤 CargaBatch</button>
+    </div>
+
+    <div id="consolidado" class="tab-content">
+    <div class="card">
+        <div class="card-title">📊 Resumen </div>
+        
+        <!-- Filtro de año y meses - Estilos unificados -->
+<div style="margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+    <!-- Filtro de año -->
+    <label style="font-weight: 600;">📅 Año:</label>
+    <select id="consolidadoAnioSelect" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-weight: 500; cursor: pointer; min-width: 140px;">
+        <option value="todos">Todos los años</option>
+    </select>
+    
+    <!-- Filtro de meses -->
+    <label style="font-weight: 600;">📆 Mes(es):</label>
+    <div style="position: relative; display: inline-block;">
+        <button id="consolidadoMesesDropdownBtn" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            Seleccionar meses <span style="font-size: 0.7rem;">▼</span>
+        </button>
+        <div id="consolidadoMesesDropdown" style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #cbd5e1; border-radius: 8px; min-width: 200px; max-height: 300px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="padding: 8px; border-bottom: 1px solid #e2e8f0;">
+                <button id="consolidadoSelectAllMeses" style="background: none; border: none; color: #2B7A4B; cursor: pointer; font-size: 0.7rem;">✓ Seleccionar todos</button>
+                <button id="consolidadoClearAllMeses" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 0.7rem; margin-left: 12px;">✗ Limpiar todos</button>
+            </div>
+            <div id="consolidadoMesesCheckboxList" style="padding: 8px 0;">
+                <!-- Los meses se llenarán dinámicamente según el año seleccionado -->
+            </div>
+            <div style="padding: 8px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 8px;">
+                <button id="consolidadoCancelarMeses" style="background: none; border: none; color: #666; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Cancelar</button>
+                <button id="consolidadoAceptarMeses" style="background: #2B7A4B; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+        
+        <!-- Tabla de resultados -->
+        <div class="table-wrapper" id="consolidado-tabla-wrapper">
+            <div class="loading">Cargando datos...</div>
+        </div>
+    </div>
+</div>
+
+    <div id="dashboard" class="tab-content">
+        <div class="card">
+            <div class="card-title">📊 Indicadores Clave</div>
+            <div class="stat-grid" id="dashboard-stats">
+                <div class="stat-card">📌 Total registros: <strong id="total-reg">0</strong></div>
+                <div class="stat-card">🏭 Proveedores distintos: <strong id="unique-proveedores">0</strong></div>
+                <div class="stat-card">📄 Facturas registradas: <strong id="total-facturas">0</strong></div>
+                <div class="stat-card">✅ Generado en AP: <strong id="generados-ap">0</strong></div>
+            </div>
+            <div class="warning-box">⚠️ <strong>Reglas pendientes:</strong> "Tipo Proceso", "Zona" y "Responsable" se llenarán al configurar reglas.</div>
+        </div>
+    </div>
+
+    <div id="basedatos" class="tab-content">
+        <div class="card">
+            <div class="card-title">🗄️ Base de Datos</div>
+            <div class="btn-group">
+                <button id="clearFiltersBtn" class="btn-secondary">🧹 Limpiar filtros</button>
+                <button id="deleteDatabaseBtn" class="btn-danger">🗑️ Borrar base de datos</button>
+                <button id="exportDataBtn" class="btn-warning">📎 Exportar a Excel</button>
+            </div>
+            <div class="table-wrapper" id="basedatos-wrapper">
+                <div class="loading">Cargando datos...</div>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <div id="reglas" class="tab-content">
+        <div class="card">
+            <div class="card-title">📐 Reglas de negocio</div>
+            <div class="btn-group">
+                <button id="clearReglasFiltersBtn" class="btn-secondary">🧹 Limpiar filtros</button>
+                <button id="deleteReglasDatabaseBtn" class="btn-danger">🗑️ Borrar reglas</button>
+                <button id="exportReglasBtn" class="btn-warning">📎 Exportar reglas a Excel</button>
+            </div>
+            <div class="table-wrapper" id="reglas-wrapper">
+                <div class="loading">Cargando reglas...</div>
+            </div>
+            <div class="pagination" id="reglasPagination"></div>
+        </div>
+    </div>
+
+    <div id="cargabatch" class="tab-content">
+        <div class="card">
+            <div class="card-title">📂 Carga Masiva (Batch)</div>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 1rem;">
+                <label style="font-weight: 600;">Pestaña destino:</label>
+                <select id="targetTabSelect" class="select-modern">
+                    <option value="basedatos">Base de Datos</option>
+                    <option value="reglas">Reglas</option>
+                </select>
+            </div>
+            <div id="dropzoneBatch" class="dropzone-area">
+                <div>📂 Arrastra y suelta tu archivo (Excel .xlsx/.xls o CSV/TXT)</div>
+                <div style="margin: 10px 0;">o</div>
+                <button type="button" id="customFileButton" class="file-input-label">📁 Seleccionar archivo</button>
+                <input type="file" id="fileBatchInput" accept=".csv,.txt,.tsv,.xls,.xlsx">
+                <div id="uploadFeedback" style="margin-top: 15px; font-size: 0.8rem;"></div>
+            </div>
+            <div class="alert-info"><strong>✅ Importante:</strong> Los archivos de carga deben tener siempre la misma estructura</div>
+        </div>
+    </div>
+
+    <footer><strong>Internal Control Engineering:</strong> Control Interno | AP Performance Dashboard</footer>
+</div>
+
+<script>
+    // ==================== BASE DE DATOS PRINCIPAL ====================
+    const DB_NAME = 'AP_Dashboard_DB';
+    const STORE_NAME = 'registros';
+    const PAGE_SIZE = 5000;
+    
+    let db = null;
+    let databaseRecords = [];
+    let currentFilters = {};
+    let uniqueValuesCache = {};
+    let activeDropdown = null;
+    let currentPage = 1;
+    let filteredData = [];
+
+    // ==================== REGLAS ====================
+    const REGLAS_DB_NAME = 'Reglas_DB';
+    const REGLAS_STORE_NAME = 'reglas';
+    
+    let reglasDB = null;
+    let reglasRecords = [];
+    let reglasCurrentFilters = {};
+    let reglasUniqueValuesCache = {};
+    let reglasCurrentPage = 1;
+    let reglasFilteredData = [];
+
+    // ==================== FUNCIÓN PARA APLICAR REGLAS A BASE DE DATOS ====================
+    async function aplicarReglasABaseDeDatos() {
+        if (reglasRecords.length === 0) return false;
+        
+        const reglasMap = new Map();
+        for (const regla of reglasRecords) {
+            const nombreProveedor = regla.nombreProveedor?.trim().toUpperCase();
+            if (nombreProveedor) {
+                reglasMap.set(nombreProveedor, {
+                    tipoProceso: regla.tipo || "",
+                    zona: regla.zona || "",
+                    responsable: regla.responsable || ""
+                });
+            }
+        }
+        
+        let actualizados = 0;
+        for (const registro of databaseRecords) {
+            const nombreProveedor = registro.nombreProveedor?.trim().toUpperCase();
+            if (nombreProveedor && reglasMap.has(nombreProveedor)) {
+                const regla = reglasMap.get(nombreProveedor);
+                if (registro.tipoProceso !== regla.tipoProceso ||
+                    registro.zona !== regla.zona ||
+                    registro.responsable !== regla.responsable) {
+                    registro.tipoProceso = regla.tipoProceso;
+                    registro.zona = regla.zona;
+                    registro.responsable = regla.responsable;
+                    actualizados++;
+                }
+            }
+        }
+        
+        if (actualizados > 0) {
+            await saveAllRecordsToDB();
+        }
+        return actualizados;
+    }
+
+    async function saveAllRecordsToDB() {
+        if (!db) await openDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const clearRequest = store.clear();
+            clearRequest.onsuccess = () => {
+                for (const rec of databaseRecords) {
+                    store.add(rec);
+                }
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = () => reject(transaction.error);
+            };
+            clearRequest.onerror = () => reject(clearRequest.error);
+        });
+    }
+
+    async function actualizarBaseDatosPorReglas() {
+        if (reglasRecords.length === 0) return;
+        await aplicarReglasABaseDeDatos();
+        const transaction = db.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.getAll();
+        request.onsuccess = () => {
+            databaseRecords = request.result || [];
+            databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
+            uniqueValuesCache = {};
+            applyFilters();
+            renderCurrentPage();
+            updateDashboardStats();
+        };
+    }
+
+    // ==================== FUNCIONES BASE DE DATOS PRINCIPAL ====================
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 2);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => { db = request.result; resolve(db); };
+            request.onupgradeneeded = (event) => {
+                const dbEvent = event.target.result;
+                if (!dbEvent.objectStoreNames.contains(STORE_NAME)) {
+                    dbEvent.createObjectStore(STORE_NAME, { keyPath: 'folioEntrada' });
+                }
+            };
+        });
+    }
+
+    async function loadAllRecords() {
+        if (!db) await openDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+            request.onsuccess = async () => {
+    databaseRecords = request.result || [];
+    databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
+    if (reglasRecords && reglasRecords.length > 0) {
+        await aplicarReglasABaseDeDatos();
+        const transaction2 = db.transaction([STORE_NAME], 'readonly');
+        const store2 = transaction2.objectStore(STORE_NAME);
+        const request2 = store2.getAll();
+        request2.onsuccess = () => {
+            databaseRecords = request2.result || [];
+            databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
+            renderizarConsolidado();  // <--- AGREGAR ESTA LÍNEA
+            resolve(databaseRecords);
+        };
+        request2.onerror = () => reject(request2.error);
+    } else {
+        renderizarConsolidado();  // <--- AGREGAR ESTA LÍNEA
+        resolve(databaseRecords);
+    }
+};
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    function parseDateToTimestamp(dateStr) {
+        if (!dateStr) return 0;
+        const match = dateStr.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
+        if (!match) return 0;
+        const day = parseInt(match[1], 10);
+        const monthStr = match[2].toLowerCase();
+        const year = 2000 + parseInt(match[3], 10);
+        const monthsList = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+        const month = monthsList.indexOf(monthStr);
+        if (month === -1) return 0;
+        return new Date(year, month, day).getTime();
+    }
+
+    function compareDates(a, b) {
+        return parseDateToTimestamp(a) - parseDateToTimestamp(b);
+    }
+
+    async function saveRecords(newRecords) {
+        if (!db) await openDB();
+        const existingFolios = new Set(databaseRecords.map(r => r.folioEntrada));
+        const toAdd = newRecords.filter(r => !existingFolios.has(r.folioEntrada));
+        if (toAdd.length === 0) return 0;
+        
+        if (reglasRecords && reglasRecords.length > 0) {
+            const reglasMap = new Map();
+            for (const regla of reglasRecords) {
+                const nombreProveedor = regla.nombreProveedor?.trim().toUpperCase();
+                if (nombreProveedor) {
+                    reglasMap.set(nombreProveedor, {
+                        tipoProceso: regla.tipo || "",
+                        zona: regla.zona || "",
+                        responsable: regla.responsable || ""
+                    });
+                }
+            }
+            for (const registro of toAdd) {
+                const nombreProveedor = registro.nombreProveedor?.trim().toUpperCase();
+                if (nombreProveedor && reglasMap.has(nombreProveedor)) {
+                    const regla = reglasMap.get(nombreProveedor);
+                    registro.tipoProceso = regla.tipoProceso;
+                    registro.zona = regla.zona;
+                    registro.responsable = regla.responsable;
+                }
+            }
+        }
+        
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            let added = 0;
+            transaction.oncomplete = () => {
+                databaseRecords.push(...toAdd);
+                databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
+                uniqueValuesCache = {};
+                resolve(added);
+            };
+            transaction.onerror = () => reject(transaction.error);
+            toAdd.forEach(rec => { store.add(rec); added++; });
+        });
+    }
+
+    async function deleteAllRecords() {
+        if (!db) await openDB();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.clear();
+            request.onsuccess = () => { databaseRecords = []; uniqueValuesCache = {}; resolve(); };
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    // ==================== FUNCIONES REGLAS ====================
+    function openReglasDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(REGLAS_DB_NAME, 1);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => { reglasDB = request.result; resolve(reglasDB); };
+            request.onupgradeneeded = (event) => {
+                const dbEvent = event.target.result;
+                if (!dbEvent.objectStoreNames.contains(REGLAS_STORE_NAME)) {
+                    dbEvent.createObjectStore(REGLAS_STORE_NAME, { keyPath: 'claveProveedor' });
+                }
+            };
+        });
+    }
+
+    async function loadAllReglas() {
+        if (!reglasDB) await openReglasDB();
+        return new Promise((resolve, reject) => {
+            const transaction = reglasDB.transaction([REGLAS_STORE_NAME], 'readonly');
+            const store = transaction.objectStore(REGLAS_STORE_NAME);
+            const request = store.getAll();
+            request.onsuccess = () => {
+                reglasRecords = request.result || [];
+                resolve(reglasRecords);
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function saveReglas(newRecords) {
+        if (!reglasDB) await openReglasDB();
+        const existingClaves = new Set(reglasRecords.map(r => r.claveProveedor));
+        const toAdd = newRecords.filter(r => !existingClaves.has(r.claveProveedor));
+        if (toAdd.length === 0) return 0;
+        
+        return new Promise((resolve, reject) => {
+            const transaction = reglasDB.transaction([REGLAS_STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(REGLAS_STORE_NAME);
+            let added = 0;
+            transaction.oncomplete = async () => {
+                reglasRecords.push(...toAdd);
+                reglasUniqueValuesCache = {};
+                await actualizarBaseDatosPorReglas();
+                resolve(added);
+            };
+            transaction.onerror = () => reject(transaction.error);
+            toAdd.forEach(rec => { store.add(rec); added++; });
+        });
+    }
+
+    async function deleteAllReglas() {
+        if (!reglasDB) await openReglasDB();
+        return new Promise((resolve, reject) => {
+            const transaction = reglasDB.transaction([REGLAS_STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(REGLAS_STORE_NAME);
+            const request = store.clear();
+            request.onsuccess = () => { reglasRecords = []; reglasUniqueValuesCache = {}; resolve(); };
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    // ==================== EXTRACCIÓN DE DATOS ====================
+    const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    
+    function excelSerialToDate(serial) {
+        if (!serial && serial !== 0) return "";
+        if (typeof serial === 'string') return serial;
+        let days = serial;
+        if (days >= 61) days = days - 1;
+        const baseDate = new Date(Date.UTC(1900, 0, 1));
+        const targetDate = new Date(baseDate.getTime() + (days - 1) * 86400000);
+        const day = targetDate.getUTCDate();
+        const month = targetDate.getUTCMonth();
+        const year = targetDate.getUTCFullYear();
+        return `${day.toString().padStart(2, '0')}-${months[month]}-${year.toString().slice(-2)}`;
+    }
+
+    function extractTableFromRows(rows) {
+        if (!rows || rows.length < 2) throw new Error("Datos insuficientes");
+        let headerRowIndex = -1, headerRow = null;
+        const expectedHeaders = ["Folio Entrada", "Fecha de Entrada", "Clave del Proveedor", "Nombre Proveedor", "Generado en AP", "Factura", "Pedido", "Tipo"];
+        
+        for (let i = 0; i < Math.min(rows.length, 50); i++) {
+            const row = rows[i];
+            if (!row) continue;
+            let matchCount = 0;
+            for (let h of expectedHeaders) {
+                if (row.some(cell => cell && cell.toString().includes(h))) matchCount++;
+            }
+            if (matchCount >= 3) {
+                headerRowIndex = i;
+                headerRow = rows[i].map(c => c?.toString().trim() || "");
+                break;
+            }
+        }
+        if (headerRowIndex === -1) {
+            headerRowIndex = 0;
+            headerRow = rows[0].map(c => c?.toString().trim() || "");
+        }
+        
+        const mapping = {};
+        for (let exp of expectedHeaders) {
+            let idx = headerRow.findIndex(h => h?.toLowerCase().includes(exp.toLowerCase()));
+            if (idx === -1) idx = headerRow.findIndex(h => h === exp);
+            if (idx === -1) throw new Error(`No se encontró columna: "${exp}"`);
+            mapping[exp] = idx;
+        }
+        
+        const records = [];
+        for (let i = headerRowIndex + 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (!row || row.length === 0) continue;
+            const folio = (row[mapping["Folio Entrada"]] || "").toString().trim();
+            if (!folio) continue;
+            
+            let fechaRaw = row[mapping["Fecha de Entrada"]];
+            let fecha = "";
+            if (typeof fechaRaw === 'number') {
+                fecha = excelSerialToDate(fechaRaw);
+            } else if (fechaRaw) {
+                fecha = fechaRaw.toString().trim();
+            }
+            
+            records.push({
+                folioEntrada: folio,
+                fechaEntrada: fecha,
+                claveProveedor: (row[mapping["Clave del Proveedor"]] || "").toString().trim(),
+                nombreProveedor: (row[mapping["Nombre Proveedor"]] || "").toString().trim(),
+                generadoAP: (row[mapping["Generado en AP"]] || "").toString().trim(),
+                factura: (row[mapping["Factura"]] || "").toString().trim(),
+                pedido: (row[mapping["Pedido"]] || "").toString().trim(),
+                tipo: (row[mapping["Tipo"]] || "").toString().trim(),
+                tipoProceso: "",
+                zona: "",
+                responsable: ""
+            });
+        }
+        if (records.length === 0) throw new Error("No se encontraron registros");
+        return records;
+    }
+
+    function extractReglasFromRows(rows) {
+        if (!rows || rows.length < 2) throw new Error("Datos insuficientes");
+        
+        let headerRowIndex = -1;
+        let headerRow = null;
+        
+        for (let i = 0; i < Math.min(rows.length, 50); i++) {
+            const row = rows[i];
+            if (!row) continue;
+            const hasClaveProveedor = row.some(cell => cell && cell.toString().toUpperCase().trim() === "CLAVE PROVEEDOR");
+            const hasNombreProveedor = row.some(cell => cell && cell.toString().toUpperCase().trim() === "NOMBRE PROVEEDOR");
+            const hasTipo = row.some(cell => cell && cell.toString().toUpperCase().trim() === "TIPO");
+            const hasZona = row.some(cell => cell && cell.toString().toUpperCase().trim() === "ZONA");
+            const hasResponsable = row.some(cell => cell && cell.toString().toUpperCase().trim() === "RESPONSABLE");
+            
+            if (hasClaveProveedor && hasNombreProveedor && hasTipo && hasZona && hasResponsable) {
+                headerRowIndex = i;
+                headerRow = rows[i].map(c => c?.toString().trim() || "");
+                break;
+            }
+        }
+        
+        if (headerRowIndex === -1) {
+            for (let i = 0; i < Math.min(rows.length, 50); i++) {
+                const row = rows[i];
+                if (!row) continue;
+                let matchCount = 0;
+                const expectedHeaders = ["CLAVE PROVEEDOR", "NOMBRE PROVEEDOR", "TIPO PROCESO", "ZONA", "RESPONSABLE"];
+                for (let h of expectedHeaders) {
+                    if (row.some(cell => cell && cell.toString().toUpperCase().includes(h))) matchCount++;
+                }
+                if (matchCount >= 4) {
+                    headerRowIndex = i;
+                    headerRow = rows[i].map(c => c?.toString().trim() || "");
+                    break;
+                }
+            }
+        }
+        
+        if (headerRowIndex === -1) {
+            throw new Error("No se encontraron los encabezados requeridos: CLAVE PROVEEDOR, NOMBRE PROVEEDOR, TIPO PROCESO, ZONA, RESPONSABLE");
+        }
+        
+        const mapping = { claveProveedor: null, proveedor: null, tipo: null, zona: null, responsable: null };
+        for (let idx = 0; idx < headerRow.length; idx++) {
+            const cell = headerRow[idx].toUpperCase().trim();
+            if (cell === "CLAVE PROVEEDOR" || cell.includes("CLAVE PROVEEDOR")) mapping.claveProveedor = idx;
+            else if (cell === "NOMBRE PROVEEDOR" || cell.includes("NOMBRE PROVEEDOR")) mapping.proveedor = idx;
+            else if (cell === "TIPO PROCESO" || cell.includes("TIPO PROCESO")) mapping.tipo = idx;
+            else if (cell === "ZONA" || cell.includes("ZONA")) mapping.zona = idx;
+            else if (cell === "RESPONSABLE" || cell.includes("RESPONSABLE")) mapping.responsable = idx;
+        }
+        
+        if (mapping.claveProveedor === null) throw new Error("No se encontró la columna: CLAVE PROVEEDOR");
+        if (mapping.proveedor === null) throw new Error("No se encontró la columna: NOMBRE PROVEEDOR");
+        if (mapping.tipo === null) throw new Error("No se encontró la columna: TIPO PROCESO");
+        if (mapping.zona === null) throw new Error("No se encontró la columna: ZONA");
+        if (mapping.responsable === null) throw new Error("No se encontró la columna: RESPONSABLE");
+        
+        const records = [];
+        for (let i = headerRowIndex + 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (!row || row.length === 0) continue;
+            const claveProveedor = (row[mapping.claveProveedor] || "").toString().trim();
+            if (!claveProveedor) continue;
+            
+            records.push({
+                claveProveedor: claveProveedor,
+                nombreProveedor: (row[mapping.proveedor] || "").toString().trim(),
+                tipo: (row[mapping.tipo] || "").toString().trim(),
+                zona: (row[mapping.zona] || "").toString().trim(),
+                responsable: (row[mapping.responsable] || "").toString().trim()
+            });
+        }
+        if (records.length === 0) throw new Error("No se encontraron registros de reglas");
+        return records;
+    }
+
+    async function processFileToTarget(file, target) {
+        if (!file) return;
+        const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+        showFeedback(`⏳ Procesando ${file.name}...`, "info");
+        try {
+            const data = await file.arrayBuffer();
+            const wb = XLSX.read(data, { type: 'array' });
+            const sheet = wb.Sheets[wb.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+            
+            if (target === "basedatos") {
+                const records = extractTableFromRows(rows);
+                const added = await saveRecords(records);
+                await loadAllRecords();
+                applyFiltersAndRender();
+                if (added > 0) {
+                    showFeedback(`✅ ${added} nuevos registros (Total: ${databaseRecords.length})`, "success");
+                } else {
+                    showFeedback(`⚠️ No se agregaron registros nuevos (todos duplicados)`, "warning");
+                }
+            } else if (target === "reglas") {
+                const records = extractReglasFromRows(rows);
+                const added = await saveReglas(records);
+                await loadAllReglas();
+                applyReglasFiltersAndRender();
+                if (added > 0) {
+                    showFeedback(`✅ ${added} nuevas reglas cargadas. Base de Datos actualizada automáticamente.`, "success");
+                } else {
+                    showFeedback(`⚠️ No se agregaron reglas nuevas (todos duplicados por Clave Proveedor)`, "warning");
+                }
+            }
+        } catch (err) {
+            showFeedback(`❌ Error: ${err.message}`, "error");
+        }
+    }
+
+    function showFeedback(msg, type) {
+        const div = document.getElementById("uploadFeedback");
+        if (div) {
+            const color = type === 'success' ? '#15803d' : (type === 'error' ? '#b91c1c' : (type === 'warning' ? '#e67e22' : '#0f3b5c'));
+            div.innerHTML = `<span style="color:${color};">${msg}</span>`;
+            setTimeout(() => div.innerHTML = "", 5000);
+        }
+    }
+
+    // ==================== FUNCIONES PARA VALORES ÚNICOS EN MODO CASCADA ====================
+    function getUniqueValuesFromData(field, dataSource) {
+        const vals = new Set();
+        for (const r of dataSource) {
+            if (r[field] && r[field].trim()) vals.add(r[field]);
+        }
+        return Array.from(vals).sort();
+    }
+
+    function applyFilters() {
+        if (Object.keys(currentFilters).length === 0) {
+            filteredData = [...databaseRecords];
+        } else {
+            filteredData = databaseRecords.filter(rec => {
+                for (const [field, filterValues] of Object.entries(currentFilters)) {
+                    if (filterValues && Array.isArray(filterValues) && filterValues.length > 0) {
+                        if (!filterValues.includes(rec[field] || "")) return false;
+                    }
+                }
+                return true;
+            });
+        }
+        currentPage = 1;
+    }
+
+    function renderCurrentPage() {
+        const container = document.getElementById("basedatos-wrapper");
+        if (!container) return;
+        
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
+        const pageData = filteredData.slice(start, end);
+        const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
+        
+        const columns = [
+            { key: 'folioEntrada', label: 'FOLIO ENTRADA' }, 
+            { key: 'fechaEntrada', label: 'FECHA ENTRADA' },
+            { key: 'claveProveedor', label: 'CLAVE PROVEEDOR' }, 
+            { key: 'nombreProveedor', label: 'NOMBRE PROVEEDOR' },
+            { key: 'generadoAP', label: 'GENERADO AP' }, 
+            { key: 'factura', label: 'FACTURA' },
+            { key: 'pedido', label: 'PEDIDO' }, 
+            { key: 'tipo', label: 'TIPO' },
+            { key: 'tipoProceso', label: 'TIPO PROCESO' }, 
+            { key: 'zona', label: 'ZONA' }, 
+            { key: 'responsable', label: 'RESPONSABLE' }
+        ];
+        
+        let html = '<table><thead><tr>';
+        for (const col of columns) {
+            const hasFilter = currentFilters[col.key] && currentFilters[col.key].length > 0;
+            html += `<th>
+                        <div class="th-content" data-field="${col.key}" data-label="${col.label}">
+                            ${col.label}
+                            <span class="filter-icon ${hasFilter ? 'active active-filter' : ''}">▼</span>
+                        </div>
+                    </th>`;
+        }
+        html += `<tr></thead><tbody>`;
+        
+        if (pageData.length === 0) {
+            html += `<tr class="empty-row"><td colspan="${columns.length}">No hay datos que coincidan con los filtros</td></tr>`;
+        } else {
+            for (const rec of pageData) {
+                html += `<tr>`;
+                for (const col of columns) {
+                    let val = rec[col.key] || "";
+                    if (val === "" && (col.key === 'tipoProceso' || col.key === 'zona' || col.key === 'responsable')) {
+                        val = '<span class="badge-pending">Pendiente</span>';
+                    } else {
+                        val = escapeHtml(val);
+                    }
+                    html += `<td>${val}</td>`;
+                }
+                html += `</tr>`;
+            }
+        }
+        html += `</tbody>`;
+        
+        container.innerHTML = html;
+        
+        const paginationDiv = document.getElementById("pagination");
+        if (totalPages > 0) {
+            paginationDiv.innerHTML = `
+                <button id="firstPageBtn" ${currentPage === 1 ? 'disabled' : ''}>⏮ Primera</button>
+                <button id="prevPageBtn" ${currentPage === 1 ? 'disabled' : ''}>◀ Anterior</button>
+                <span class="page-info">Página ${currentPage} de ${totalPages} (${filteredData.length} registros)</span>
+                <button id="nextPageBtn" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>Siguiente ▶</button>
+                <button id="lastPageBtn" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>Última ⏭</button>
+            `;
+        } else {
+            paginationDiv.innerHTML = `<span class="page-info">No hay registros</span>`;
+        }
+        
+        document.getElementById("firstPageBtn")?.addEventListener("click", () => { currentPage = 1; renderCurrentPage(); });
+        document.getElementById("prevPageBtn")?.addEventListener("click", () => { if (currentPage > 1) { currentPage--; renderCurrentPage(); } });
+        document.getElementById("nextPageBtn")?.addEventListener("click", () => { if (currentPage < totalPages) { currentPage++; renderCurrentPage(); } });
+        document.getElementById("lastPageBtn")?.addEventListener("click", () => { currentPage = totalPages; renderCurrentPage(); });
+        
+        container.querySelectorAll('.th-content').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const field = el.dataset.field;
+                const label = el.dataset.label;
+                const rect = el.getBoundingClientRect();
+                const currentSelected = currentFilters[field] || [];
+                createFilterDropdownCascada(field, label, rect, currentSelected, filteredData, true);
+            });
+        });
+    }
+    
+    // ==================== RENDERIZADO REGLAS ====================
+    function applyReglasFilters() {
+        if (Object.keys(reglasCurrentFilters).length === 0) {
+            reglasFilteredData = [...reglasRecords];
+        } else {
+            reglasFilteredData = reglasRecords.filter(rec => {
+                for (const [field, filterValues] of Object.entries(reglasCurrentFilters)) {
+                    if (filterValues && Array.isArray(filterValues) && filterValues.length > 0) {
+                        if (!filterValues.includes(rec[field] || "")) return false;
+                    }
+                }
+                return true;
+            });
+        }
+        reglasCurrentPage = 1;
+    }
+
+    function renderReglasCurrentPage() {
+        const container = document.getElementById("reglas-wrapper");
+        if (!container) return;
+        
+        const start = (reglasCurrentPage - 1) * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
+        const pageData = reglasFilteredData.slice(start, end);
+        const totalPages = Math.ceil(reglasFilteredData.length / PAGE_SIZE);
+        
+        const columns = [
+            { key: 'claveProveedor', label: 'CLAVE PROVEEDOR' },
+            { key: 'nombreProveedor', label: 'NOMBRE PROVEEDOR' },
+            { key: 'tipo', label: 'TIPO PROCESO' },
+            { key: 'zona', label: 'ZONA' },
+            { key: 'responsable', label: 'RESPONSABLE' }
+        ];
+        
+        let html = '<table><thead><tr>';
+        for (const col of columns) {
+            const hasFilter = reglasCurrentFilters[col.key] && reglasCurrentFilters[col.key].length > 0;
+            html += `<th>
+                        <div class="th-content" data-field="${col.key}" data-label="${col.label}">
+                            ${col.label}
+                            <span class="filter-icon ${hasFilter ? 'active active-filter' : ''}">▼</span>
+                        </div>
+                    </th>`;
+        }
+        html += `</thead><tbody>`;
+        
+        if (pageData.length === 0) {
+            html += `<tr class="empty-row"><td colspan="${columns.length}">No hay datos que coincidan con los filtros</td></tr>`;
+        } else {
+            for (const rec of pageData) {
+                html += `<tr>`;
+                for (const col of columns) {
+                    let val = rec[col.key] || "";
+                    if (val === "") val = "<span class='badge-pending'>-</span>";
+                    else val = escapeHtml(val);
+                    html += `<td>${val}</td>`;
+                }
+                html += `</tr>`;
+            }
+        }
+        html += `</tbody>`;
+        
+        container.innerHTML = html;
+        
+        const paginationDiv = document.getElementById("reglasPagination");
+        if (totalPages > 0) {
+            paginationDiv.innerHTML = `
+                <button id="reglasFirstPageBtn" ${reglasCurrentPage === 1 ? 'disabled' : ''}>⏮ Primera</button>
+                <button id="reglasPrevPageBtn" ${reglasCurrentPage === 1 ? 'disabled' : ''}>◀ Anterior</button>
+                <span class="page-info">Página ${reglasCurrentPage} de ${totalPages} (${reglasFilteredData.length} reglas)</span>
+                <button id="reglasNextPageBtn" ${reglasCurrentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>Siguiente ▶</button>
+                <button id="reglasLastPageBtn" ${reglasCurrentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>Última ⏭</button>
+            `;
+        } else {
+            paginationDiv.innerHTML = `<span class="page-info">No hay reglas</span>`;
+        }
+        
+        document.getElementById("reglasFirstPageBtn")?.addEventListener("click", () => { reglasCurrentPage = 1; renderReglasCurrentPage(); });
+        document.getElementById("reglasPrevPageBtn")?.addEventListener("click", () => { if (reglasCurrentPage > 1) { reglasCurrentPage--; renderReglasCurrentPage(); } });
+        document.getElementById("reglasNextPageBtn")?.addEventListener("click", () => { if (reglasCurrentPage < totalPages) { reglasCurrentPage++; renderReglasCurrentPage(); } });
+        document.getElementById("reglasLastPageBtn")?.addEventListener("click", () => { reglasCurrentPage = totalPages; renderReglasCurrentPage(); });
+        
+        container.querySelectorAll('.th-content').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const field = el.dataset.field;
+                const label = el.dataset.label;
+                const rect = el.getBoundingClientRect();
+                const currentSelected = reglasCurrentFilters[field] || [];
+                createFilterDropdownCascada(field, label, rect, currentSelected, reglasFilteredData, false);
+            });
+        });
+    }
+    
+    // ==================== DROPDOWN COMÚN CON MODO CASCADA ====================
+    function closeDropdown() {
+        if (activeDropdown) {
+            activeDropdown.remove();
+            activeDropdown = null;
+        }
+    }
+    
+    function createFilterDropdownCascada(field, label, rect, currentSelected, visibleData, isBaseDatos) {
+        if (activeDropdown) {
+            activeDropdown.remove();
+            activeDropdown = null;
+        }
+        
+        const values = getUniqueValuesFromData(field, visibleData);
+        const selectedSet = new Set(currentSelected);
+        
+        const dropdown = document.createElement('div');
+        dropdown.className = 'filter-dropdown';
+        dropdown.style.top = rect.bottom + window.scrollY + 'px';
+        dropdown.style.left = rect.left + window.scrollX + 'px';
+        
+        dropdown.innerHTML = `
+            <div class="filter-header">Filtrar por ${label}</div>
+            <div class="filter-search">
+                <input type="text" placeholder="Buscar..." id="filterSearchInput">
+            </div>
+            <div class="filter-options" id="filterOptionsList">
+                ${values.map(v => `
+                    <div class="filter-option" data-value="${escapeHtml(v)}">
+                        <input type="checkbox" value="${escapeHtml(v)}" id="opt_${escapeHtml(v)}" ${selectedSet.has(v) ? 'checked' : ''}>
+                        <label for="opt_${escapeHtml(v)}">${escapeHtml(v)}</label>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="filter-actions">
+                <button id="selectAllBtn">Seleccionar todos</button>
+                <button id="clearAllBtn">Limpiar</button>
+                <button id="applyFilterBtn" style="background:#2B7A4B; color:white; padding:4px 12px; border-radius:4px;">Aplicar</button>
+            </div>
+        `;
+        
+        document.body.appendChild(dropdown);
+        activeDropdown = dropdown;
+        
+        const searchInput = dropdown.querySelector('#filterSearchInput');
+        const optionsContainer = dropdown.querySelector('#filterOptionsList');
+        
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const options = optionsContainer.querySelectorAll('.filter-option');
+            options.forEach(opt => {
+                const val = opt.dataset.value.toLowerCase();
+                opt.style.display = val.includes(term) ? 'flex' : 'none';
+            });
+        });
+        
+        dropdown.querySelector('#selectAllBtn').onclick = () => {
+            optionsContainer.querySelectorAll('.filter-option').forEach(opt => {
+                opt.querySelector('input').checked = true;
+            });
+        };
+        
+        dropdown.querySelector('#clearAllBtn').onclick = () => {
+            optionsContainer.querySelectorAll('.filter-option').forEach(opt => {
+                opt.querySelector('input').checked = false;
+            });
+        };
+        
+        dropdown.querySelector('#applyFilterBtn').onclick = () => {
+            const selected = [];
+            optionsContainer.querySelectorAll('.filter-option input:checked').forEach(cb => {
+                selected.push(cb.value);
+            });
+            
+            if (selected.length === 0 || selected.length === values.length) {
+                if (isBaseDatos) {
+                    delete currentFilters[field];
+                } else {
+                    delete reglasCurrentFilters[field];
+                }
+            } else {
+                if (isBaseDatos) {
+                    currentFilters[field] = selected;
+                } else {
+                    reglasCurrentFilters[field] = selected;
+                }
+            }
+            closeDropdown();
+            if (isBaseDatos) {
+                applyFiltersAndRender();
+            } else {
+                applyReglasFiltersAndRender();
+            }
+        };
+        
+        // No cerrar al hacer clic fuera del dropdown para permitir múltiples selecciones
+        // El dropdown solo se cierra con el botón Aplicar o si se abre otro dropdown
+    }
+    
+    // ==================== ACTUALIZACIONES ====================
+    function updateDashboardStats() {
+        const total = filteredData.length;
+        const proveedores = new Set(filteredData.map(r => r.claveProveedor)).size;
+        const facturas = filteredData.filter(r => r.factura && !r.factura.includes("SIN FACT")).length;
+        const generados = filteredData.filter(r => r.generadoAP?.toUpperCase() === "SI").length;
+        document.getElementById("total-reg").innerText = total;
+        document.getElementById("unique-proveedores").innerText = proveedores;
+        document.getElementById("total-facturas").innerText = facturas;
+        document.getElementById("generados-ap").innerText = generados;
+    }
+    
+    async function applyFiltersAndRender() {
+        applyFilters();
+        renderCurrentPage();
+        updateDashboardStats();
+    }
+    
+    async function applyReglasFiltersAndRender() {
+        applyReglasFilters();
+        renderReglasCurrentPage();
+    }
+    
+    async function clearAllFilters() { 
+        currentFilters = {}; 
+        await applyFiltersAndRender();
+        showFeedback("Filtros limpiados", "success"); 
+    }
+    
+    async function clearReglasFilters() { 
+        reglasCurrentFilters = {}; 
+        await applyReglasFiltersAndRender();
+        showFeedback("Filtros de reglas limpiados", "success"); 
+    }
+    
+    async function deleteDatabase() {
+        if (confirm("⚠️ ¿Borrar TODA la base de datos?")) {
+            await deleteAllRecords();
+            await loadAllRecords();
+            currentFilters = {};
+            uniqueValuesCache = {};
+            await applyFiltersAndRender();
+            showFeedback("Base de datos eliminada", "success");
+        }
+    }
+    
+    async function deleteReglasDatabase() {
+        if (confirm("⚠️ ¿Borrar TODAS las reglas? Esto limpiará también TIPO PROCESO, ZONA y RESPONSABLE en Base de Datos")) {
+            await deleteAllReglas();
+            await loadAllReglas();
+            for (const registro of databaseRecords) {
+                registro.tipoProceso = "";
+                registro.zona = "";
+                registro.responsable = "";
+            }
+            await saveAllRecordsToDB();
+            await loadAllRecords();
+            reglasCurrentFilters = {};
+            reglasUniqueValuesCache = {};
+            await applyReglasFiltersAndRender();
+            await applyFiltersAndRender();
+            showFeedback("Reglas eliminadas y campos de Base de Datos limpiados", "success");
+        }
+    }
+    
+    function exportToExcel() {
+        if (filteredData.length === 0) { alert("No hay datos para exportar."); return; }
+        const exportData = filteredData.map(rec => ({
+            'Folio Entrada': rec.folioEntrada,
+            'Fecha de Entrada': rec.fechaEntrada,
+            'Clave del Proveedor': rec.claveProveedor,
+            'Nombre Proveedor': rec.nombreProveedor,
+            'Generado en AP': rec.generadoAP,
+            'Factura': rec.factura,
+            'Pedido': rec.pedido,
+            'Tipo': rec.tipo,
+            'Tipo Proceso': rec.tipoProceso || '',
+            'Zona': rec.zona || '',
+            'Responsable': rec.responsable || ''
+        }));
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Base_Datos_AP');
+        XLSX.writeFile(wb, `ap_dashboard_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+        showFeedback(`✅ Exportados ${filteredData.length} registros`, "success");
+    }
+    
+    function exportReglasToExcel() {
+        if (reglasFilteredData.length === 0) { alert("No hay reglas para exportar."); return; }
+        const exportData = reglasFilteredData.map(rec => ({
+            'CLAVE PROVEEDOR': rec.claveProveedor,
+            'NOMBRE PROVEEDOR': rec.nombreProveedor,
+            'TIPO PROCESO': rec.tipo,
+            'ZONA': rec.zona,
+            'RESPONSABLE': rec.responsable
+        }));
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Reglas');
+        XLSX.writeFile(wb, `reglas_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+        showFeedback(`✅ Exportadas ${reglasFilteredData.length} reglas`, "success");
+    }
+
+    // ==================== INICIALIZACIÓN ====================
+    function initDragAndDrop() {
+        const dropzone = document.getElementById("dropzoneBatch");
+        const fileInput = document.getElementById("fileBatchInput");
+        const targetSelect = document.getElementById("targetTabSelect");
+        const customBtn = document.getElementById("customFileButton");
+        if (!dropzone) return;
+        
+        dropzone.addEventListener("dragover", e => { e.preventDefault(); dropzone.classList.add("drag-over"); });
+        dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag-over"));
+        dropzone.addEventListener("drop", async e => {
+            e.preventDefault(); dropzone.classList.remove("drag-over");
+            if (e.dataTransfer.files.length) await processFileToTarget(e.dataTransfer.files[0], targetSelect.value);
+        });
+        if (customBtn) customBtn.onclick = () => fileInput.click();
+        fileInput.onchange = async e => {
+            if (e.target.files.length) { await processFileToTarget(e.target.files[0], targetSelect.value); fileInput.value = ""; }
+        };
+    }
+
+    function initTabs() {
+        const btns = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+        function activate(id) {
+            contents.forEach(c => c.classList.remove('active'));
+            btns.forEach(b => b.classList.remove('active'));
+            document.getElementById(id)?.classList.add('active');
+            Array.from(btns).find(b => b.dataset.tab === id)?.classList.add('active');
+            if (id === 'basedatos') applyFiltersAndRender();
+            if (id === 'reglas') applyReglasFiltersAndRender();
+        }
+        btns.forEach(b => b.onclick = () => activate(b.dataset.tab));
+        activate('basedatos');
+    }
+
+    async function init() {
+        await openDB();
+        await loadAllRecords();
+        await openReglasDB();
+        await loadAllReglas();
+        initTabs();
+        initDragAndDrop();
+        applyFilters();
+        renderCurrentPage();
+        applyReglasFilters();
+        renderReglasCurrentPage();
+        updateDashboardStats();
+        document.getElementById('clearFiltersBtn')?.addEventListener('click', clearAllFilters);
+        document.getElementById('deleteDatabaseBtn')?.addEventListener('click', deleteDatabase);
+        document.getElementById('exportDataBtn')?.addEventListener('click', exportToExcel);
+        document.getElementById('clearReglasFiltersBtn')?.addEventListener('click', clearReglasFilters);
+        document.getElementById('deleteReglasDatabaseBtn')?.addEventListener('click', deleteReglasDatabase);
+        document.getElementById('exportReglasBtn')?.addEventListener('click', exportReglasToExcel);
+    }
+
+    function escapeHtml(str) { 
+        if (!str) return ""; 
+        return String(str).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); 
+    }
+
+// ==================== FUNCIONES PARA CONSOLIDADO ====================
+let consolidadoAnioSeleccionado = "todos";
+let consolidadoMesesDisponibles = [];
+let consolidadoMesesSeleccionados = [];
+let consolidadoMesesTempSeleccionados = [];
+let consolidadoAniosDisponibles = []; // Nuevo: años disponibles
+
+function obtenerMesesUnicos() {
+    const mesesMap = new Map(); // Usamos Map para almacenar el orden original
+    for (const rec of databaseRecords) {
+        if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
+            const fecha = rec.fechaEntrada;
+            const match = fecha.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
+            if (match) {
+                const mesAbrev = match[2].toLowerCase();
+                const año = match[3];
+                const añoCompleto = 2000 + parseInt(año);
+                const meses = {
+                    'ene': 'ENERO', 'feb': 'FEBRERO', 'mar': 'MARZO', 'abr': 'ABRIL',
+                    'may': 'MAYO', 'jun': 'JUNIO', 'jul': 'JULIO', 'ago': 'AGOSTO',
+                    'sep': 'SEPTIEMBRE', 'oct': 'OCTUBRE', 'nov': 'NOVIEMBRE', 'dic': 'DICIEMBRE'
+                };
+                const mesKey = `${meses[mesAbrev]} ${añoCompleto}`;
+                const orden = `${añoCompleto}-${obtenerNumeroMes(meses[mesAbrev])}`;
+                mesesMap.set(mesKey, orden);
+            }
+        }
+    }
+
+    // Ordenar por año y número de mes
+    return Array.from(mesesMap.keys()).sort((a, b) => {
+        const ordenA = mesesMap.get(a);
+        const ordenB = mesesMap.get(b);
+        return ordenA.localeCompare(ordenB);
+    });
+}
+
+// Función auxiliar para obtener el número del mes
+function obtenerNumeroMes(nombreMes) {
+    const meses = {
+        'ENERO': 1, 'FEBRERO': 2, 'MARZO': 3, 'ABRIL': 4,
+        'MAYO': 5, 'JUNIO': 6, 'JULIO': 7, 'AGOSTO': 8,
+        'SEPTIEMBRE': 9, 'OCTUBRE': 10, 'NOVIEMBRE': 11, 'DICIEMBRE': 12
+    };
+    return meses[nombreMes] || 0;
+}
+
+// Nueva función: Obtener años únicos
+function obtenerAniosUnicos() {
+    const aniosSet = new Set();
+    for (const rec of databaseRecords) {
+        if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
+            const match = rec.fechaEntrada.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
+            if (match) {
+                const año = 2000 + parseInt(match[3]);
+                aniosSet.add(año);
+            }
+        }
+    }
+    return Array.from(aniosSet).sort((a, b) => b - a);
+}
+
+// Nueva función: Obtener meses disponibles según el año seleccionado
+function obtenerMesesPorAnio(anio) {
+    if (!anio || anio === "todos") {
+        return obtenerMesesUnicos();
+    }
+    
+    const mesesMap = new Map();
+    for (const rec of databaseRecords) {
+        if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
+            const fecha = rec.fechaEntrada;
+            const match = fecha.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
+            if (match) {
+                const mesAbrev = match[2].toLowerCase();
+                const año = 2000 + parseInt(match[3]);
+                if (año === anio) {
+                    const meses = {
+                        'ene': 'ENERO', 'feb': 'FEBRERO', 'mar': 'MARZO', 'abr': 'ABRIL',
+                        'may': 'MAYO', 'jun': 'JUNIO', 'jul': 'JULIO', 'ago': 'AGOSTO',
+                        'sep': 'SEPTIEMBRE', 'oct': 'OCTUBRE', 'nov': 'NOVIEMBRE', 'dic': 'DICIEMBRE'
+                    };
+                    const mesKey = `${meses[mesAbrev]} ${año}`;
+                    const orden = `${año}-${obtenerNumeroMes(meses[mesAbrev])}`;
+                    mesesMap.set(mesKey, orden);
+                }
+            }
+        }
+    }
+    
+    return Array.from(mesesMap.keys()).sort((a, b) => {
+        const ordenA = mesesMap.get(a);
+        const ordenB = mesesMap.get(b);
+        return ordenA.localeCompare(ordenB);
+    });
+}
+
+// Obtener proveedores elegibles (al menos un registro con Generado AP="SI" y Tipo Proceso="AUTOMÁTICO")
+function obtenerProveedoresElegibles() {
+    const proveedoresSet = new Set();
+    for (const rec of databaseRecords) {
+        const generadoAP = (rec.generadoAP || "").toUpperCase();
+        const tipoProceso = (rec.tipoProceso || "").toUpperCase();
+        if (generadoAP === "SI" && tipoProceso === "AUTOMÁTICO") {
+            if (rec.nombreProveedor && rec.nombreProveedor.trim()) {
+                proveedoresSet.add(rec.nombreProveedor.trim());
+            }
+        }
+    }
+    return Array.from(proveedoresSet).sort();
+}
+
+// Extraer mes de una fecha (formato "dd-mmm-aa" -> "MMM-AA")
+function extraerMesKey(fechaStr) {
+    if (!fechaStr) return null;
+    const match = fechaStr.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
+    if (match) {
+        const mesAbrev = match[2].toLowerCase();
+        const año = match[3];
+        const añoCompleto = 2000 + parseInt(año);
+        const meses = {
+            'ene': 'ENERO', 'feb': 'FEBRERO', 'mar': 'MARZO', 'abr': 'ABRIL',
+            'may': 'MAYO', 'jun': 'JUNIO', 'jul': 'JULIO', 'ago': 'AGOSTO',
+            'sep': 'SEPTIEMBRE', 'oct': 'OCTUBRE', 'nov': 'NOVIEMBRE', 'dic': 'DICIEMBRE'
+        };
+        return `${meses[mesAbrev]} ${añoCompleto}`;
+    }
+    return null;
+}
+
+// Calcular datos consolidados por proveedor y mes
+function calcularConsolidado() {
+    const proveedores = obtenerProveedoresElegibles();
+    const meses = obtenerMesesUnicos();
+    
+    // Inicializar estructura de datos
+    const datos = {};
+    for (const proveedor of proveedores) {
+        datos[proveedor] = {};
+        for (const mes of meses) {
+            datos[proveedor][mes] = {
+                totales: 0,
+                empatadas: 0
+            };
+        }
+    }
+    
+    // Recorrer todos los registros que cumplan Tipo Proceso = "AUTOMÁTICO"
+    for (const rec of databaseRecords) {
+        const tipoProceso = (rec.tipoProceso || "").toUpperCase();
+        if (tipoProceso !== "AUTOMÁTICO") continue;
+        
+        const proveedor = rec.nombreProveedor?.trim();
+        if (!proveedor || !datos[proveedor]) continue;
+        
+        const mesKey = extraerMesKey(rec.fechaEntrada);
+        if (!mesKey || !datos[proveedor][mesKey]) continue;
+        
+        // ENTRADAS TOTALES: todos los registros (SI o NO)
+        datos[proveedor][mesKey].totales++;
+        
+        // ENTRADAS EMPATADAS: solo Generado AP = "SI"
+        const generadoAP = (rec.generadoAP || "").toUpperCase();
+        if (generadoAP === "SI") {
+            datos[proveedor][mesKey].empatadas++;
+        }
+    }
+    
+    return { datos, meses, proveedores };
+}
+
+// Actualizar la lista de checkboxes en el dropdown
+function actualizarListaMesesDropdown() {
+    const container = document.getElementById("consolidadoMesesCheckboxList");
+    if (!container) return;
+    
+    // Obtener meses según el año seleccionado
+    const meses = consolidadoAnioSeleccionado === "todos" 
+        ? consolidadoMesesDisponibles 
+        : obtenerMesesPorAnio(parseInt(consolidadoAnioSeleccionado));
+    
+    if (meses.length === 0) {
+        container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay meses disponibles para este año</div>';
+        return;
+    }
+    
+    // Filtrar los meses seleccionados que estén disponibles en el año actual
+    const mesesDisponiblesSet = new Set(meses);
+    consolidadoMesesTempSeleccionados = consolidadoMesesTempSeleccionados.filter(mes => mesesDisponiblesSet.has(mes));
+    
+    container.innerHTML = meses.map(mes => `
+        <label style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.75rem;">
+            <input type="checkbox" value="${mes}" style="cursor: pointer;" ${consolidadoMesesTempSeleccionados.includes(mes) ? 'checked' : ''}>
+            <span>${mes}</span>
+        </label>
+    `).join('');
+}
+
+function renderizarConsolidado() {
+    const container = document.getElementById("consolidado-tabla-wrapper");
+    if (!container) return;
+    
+    if (databaseRecords.length === 0) {
+        container.innerHTML = '<div class="loading">No hay datos cargados en Base de Datos</div>';
+        return;
+    }
+    
+    const { datos, meses, proveedores } = calcularConsolidado();
+    
+    if (proveedores.length === 0) {
+        container.innerHTML = '<div class="loading">No hay proveedores que cumplan los criterios (Generado AP=SI y Tipo Proceso=AUTOMÁTICO)</div>';
+        return;
+    }
+    
+    // Actualizar select de años
+    const selectAnio = document.getElementById("consolidadoAnioSelect");
+    if (selectAnio) {
+        const aniosDisponibles = obtenerAniosUnicos();
+        let options = '<option value="todos">Todos los años</option>';
+        for (const anio of aniosDisponibles) {
+            options += `<option value="${anio}">${anio}</option>`;
+        }
+        selectAnio.innerHTML = options;
+        selectAnio.value = consolidadoAnioSeleccionado;
+    }
+    
+    // Actualizar meses disponibles según año seleccionado
+    if (consolidadoAnioSeleccionado === "todos") {
+        consolidadoMesesDisponibles = meses;
+    } else {
+        consolidadoMesesDisponibles = obtenerMesesPorAnio(parseInt(consolidadoAnioSeleccionado));
+    }
+    
+    if (consolidadoMesesSeleccionados.length === 0 || 
+        !consolidadoMesesSeleccionados.some(m => consolidadoMesesDisponibles.includes(m))) {
+        consolidadoMesesSeleccionados = [...consolidadoMesesDisponibles];
+    }
+    consolidadoMesesTempSeleccionados = [...consolidadoMesesSeleccionados];
+    
+    actualizarListaMesesDropdown();
+    
+    const mesesFiltrados = meses.filter(m => consolidadoMesesDisponibles.includes(m) && consolidadoMesesSeleccionados.includes(m));
+    
+    // ========== CONSTRUCCIÓN CORRECTA DE LA TABLA ==========
+    let html = '<table class="consolidado-tabla">';
+    
+    // PRIMERA FILA: NOMBRE PROVEEDOR + MESES (con colspan=4)
+    html += '<thead>';
+    html += '<tr>';
+    html += '<th rowspan="2">NOMBRE PROVEEDOR</th>';
+    for (const mes of mesesFiltrados) {
+        html += `<th colspan="4">${mes}</th>`;
+    }
+    html += '</tr>';
+    
+    // SEGUNDA FILA: SUBCOLUMNAS para cada mes
+    html += '<tr>';
+    for (let i = 0; i < mesesFiltrados.length; i++) {
+        html += '<th>ENTRADAS TOTALES</th>';
+        html += '<th>ENTRADAS EMPATADAS</th>';
+        html += '<th>ERS SIN XML</th>';
+        html += '<th>% NO EMPATADO</th>';
+    }
+    html += '</tr>';
+    html += '</thead>';
+    
+    // CUERPO DE LA TABLA
+    html += '<tbody>';
+    for (const proveedor of proveedores) {
+        html += '<tr>';
+        html += `<td style="text-align:left; font-weight:500;">${escapeHtml(proveedor)}</td>`;
+        for (const mes of mesesFiltrados) {
+            const data = datos[proveedor][mes] || { totales: 0, empatadas: 0 };
+            const totales = data.totales;
+            const empatadas = data.empatadas;
+            const ersSinXml = totales - empatadas;
+            let porcentaje = 0;
+            if (totales > 0) {
+                porcentaje = (ersSinXml / totales) * 100;
+            }
+            const porcentajeFormateado = porcentaje.toFixed(2) + '%';
+            
+            let porcentajeStyle = '';
+            if (porcentaje > 50) {
+                porcentajeStyle = 'style="background:#fee2e2; color:#b91c1c; font-weight:bold;"';
+            } else if (porcentaje > 25) {
+                porcentajeStyle = 'style="background:#fff3e0; color:#e67e22; font-weight:bold;"';
+            } else {
+                porcentajeStyle = 'style="background:#e6f7ec; color:#15803d; font-weight:bold;"';
+            }
+            
+            html += `<td>${totales}</td>`;
+            html += `<td>${empatadas}</td>`;
+            html += `<td>${ersSinXml}</td>`;
+            html += `<td ${porcentajeStyle}>${porcentajeFormateado}</td>`;
+        }
+        html += '</tr>';
+    }
+    html += '</tbody>';
+    html += '</table>';
+    
+    if (mesesFiltrados.length === 0) {
+        html = '<div class="loading">No hay meses seleccionados. Selecciona al menos un mes en el filtro.</div>';
+    }
+    
+    container.innerHTML = html;
+}
+
+// Inicializar eventos del dropdown de meses
+function inicializarDropdownMeses() {
+    const dropdownBtn = document.getElementById("consolidadoMesesDropdownBtn");
+    const dropdown = document.getElementById("consolidadoMesesDropdown");
+    const selectAnio = document.getElementById("consolidadoAnioSelect");
+    
+    if (!dropdownBtn || !dropdown) return;
+    
+    // Evento para cambio de año
+    if (selectAnio) {
+        selectAnio.addEventListener("change", (e) => {
+            consolidadoAnioSeleccionado = e.target.value;
+            // Resetear selección de meses al cambiar de año
+            consolidadoMesesSeleccionados = [];
+            renderizarConsolidado();
+        });
+    }
+    
+    // Abrir/cerrar dropdown
+    dropdownBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+        } else {
+            // Sincronizar selección temporal con la actual
+            consolidadoMesesTempSeleccionados = [...consolidadoMesesSeleccionados];
+            actualizarListaMesesDropdown();
+            dropdown.style.display = "block";
+        }
+    });
+    
+    // Cerrar al hacer clic fuera
+    document.addEventListener("click", (e) => {
+        if (dropdown && !dropdown.contains(e.target) && e.target !== dropdownBtn) {
+            dropdown.style.display = "none";
+        }
+    });
+    
+    // Botón Seleccionar todos
+    const selectAllBtn = document.getElementById("consolidadoSelectAllMeses");
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener("click", () => {
+            const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+        });
+    }
+    
+    // Botón Limpiar todos
+    const clearAllBtn = document.getElementById("consolidadoClearAllMeses");
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener("click", () => {
+            const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        });
+    }
+    
+    // Botón Cancelar
+    const cancelarBtn = document.getElementById("consolidadoCancelarMeses");
+    if (cancelarBtn) {
+        cancelarBtn.addEventListener("click", () => {
+            dropdown.style.display = "none";
+        });
+    }
+    
+    // Botón Aceptar
+    const aceptarBtn = document.getElementById("consolidadoAceptarMeses");
+    if (aceptarBtn) {
+        aceptarBtn.addEventListener("click", () => {
+            const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
+            consolidadoMesesSeleccionados = [];
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    consolidadoMesesSeleccionados.push(cb.value);
+                }
+            });
+            dropdown.style.display = "none";
+            renderizarConsolidado();
+        });
+    }
+}
+
+// Inicializar dropdown de meses para consolidado
+inicializarDropdownMeses();
+    
+    init();
+</script>
+</body>
+</html>
