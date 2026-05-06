@@ -547,13 +547,9 @@
     .btn-group { gap: 8px; }
     button:not(.tab-btn) { padding: 6px 10px; font-size: 0.7rem; }
     
-    /* NUEVO: Reduce espacio entre filas de encabezados en tabla consolidado */
-    .consolidado-tabla thead tr:first-child th {
-        padding-bottom: 0px !important;
-    }
+    /* NUEVO: Ajuste para tabla consolidado en tablets */
     .consolidado-tabla thead tr:last-child th {
-        padding-top: 0px !important;
-        padding-bottom: 2px !important;
+        top: 35px !important;  /* Reduce este valor si ves espacio, o aumentalo si se superponen */
     }
 }
 
@@ -565,13 +561,9 @@
     .table-wrapper { max-height: 400px; }
     th, td { padding: 4px 2px; font-size: 0.55rem; }
     
-    /* NUEVO: Aún más reducido para celulares pequeños */
-    .consolidado-tabla thead tr:first-child th {
-        padding-bottom: 0px !important;
-    }
+    /* NUEVO: Ajuste para tabla consolidado en celulares */
     .consolidado-tabla thead tr:last-child th {
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
+        top: 30px !important;  /* Reduce este valor si ves espacio, o aumentalo si se superponen */
     }
 }
 
