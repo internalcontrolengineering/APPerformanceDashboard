@@ -547,10 +547,25 @@
         <!-- Filtro de año y meses - Estilos unificados -->
 <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
     <!-- Filtro de año -->
-    <label style="font-weight: 600;">📅 Año:</label>
-    <select id="consolidadoAnioSelect" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-weight: 500; cursor: pointer; min-width: 140px;">
-        <option value="todos">Todos los años</option>
-    </select>
+<label style="font-weight: 600;">📅 Año(s):</label>
+<div style="position: relative; display: inline-block;">
+    <button id="consolidadoAnioDropdownBtn" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; min-width: 140px;">
+        Seleccionar años <span style="font-size: 0.7rem;">▼</span>
+    </button>
+    <div id="consolidadoAnioDropdown" style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #cbd5e1; border-radius: 8px; min-width: 200px; max-height: 300px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div style="padding: 8px; border-bottom: 1px solid #e2e8f0;">
+            <button id="consolidadoSelectAllAnios" style="background: none; border: none; color: #2B7A4B; cursor: pointer; font-size: 0.7rem;">✓ Seleccionar todos</button>
+            <button id="consolidadoClearAllAnios" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 0.7rem; margin-left: 12px;">✗ Limpiar todos</button>
+        </div>
+        <div id="consolidadoAniosCheckboxList" style="padding: 8px 0;">
+            <!-- Los años se llenarán dinámicamente -->
+        </div>
+        <div style="padding: 8px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 8px;">
+            <button id="consolidadoCancelarAnios" style="background: none; border: none; color: #666; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Cancelar</button>
+            <button id="consolidadoAceptarAnios" style="background: #2B7A4B; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Aceptar</button>
+        </div>
+    </div>
+</div>
     
     <!-- Filtro de meses -->
     <label style="font-weight: 600;">📆 Mes(es):</label>
@@ -645,7 +660,20 @@
         </div>
     </div>
 
-    <footer><strong>Internal Control Engineering:</strong> Control Interno | AP Performance Dashboard</footer>
+<footer style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem; border-top: 1px solid #e2e8f0;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <!-- Logo -->
+        <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoCI-G.png" 
+             alt="Control Interno" 
+             style="height: 50px; width: auto; object-fit: contain;">
+        
+        <!-- Textos -->
+        <div style="display: flex; flex-direction: column; line-height: 1.3;">
+            <strong style="font-size: 0.9rem; color: #0A2540; letter-spacing: 0.5px;">Ingeniería de Control</strong>
+            <span style="font-size: 0.7rem; color: #64748b; font-weight: 400;">AP Performance Dashboard</span>
+        </div>
+    </div>
+</footer>
 </div>
 
 <script>
@@ -1586,6 +1614,9 @@
         document.getElementById('clearReglasFiltersBtn')?.addEventListener('click', clearReglasFilters);
         document.getElementById('deleteReglasDatabaseBtn')?.addEventListener('click', deleteReglasDatabase);
         document.getElementById('exportReglasBtn')?.addEventListener('click', exportReglasToExcel);
+        
+        inicializarDropdownAnios();  // <--- LÍNEA NUEVA 1
+        inicializarDropdownMeses();  // <--- LÍNEA NUEVA 2
     }
 
     function escapeHtml(str) { 
@@ -1593,12 +1624,14 @@
         return String(str).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); 
     }
 
-// ==================== FUNCIONES PARA CONSOLIDADO ====================
+// ==================== VARIABLES PARA CONSOLIDADO ====================
 let consolidadoAnioSeleccionado = "todos";
+let consolidadoAniosDisponibles = [];
+let consolidadoAniosSeleccionados = [];
+let consolidadoAniosTempSeleccionados = [];
 let consolidadoMesesDisponibles = [];
 let consolidadoMesesSeleccionados = [];
 let consolidadoMesesTempSeleccionados = [];
-let consolidadoAniosDisponibles = []; // Nuevo: años disponibles
 
 function obtenerMesesUnicos() {
     const mesesMap = new Map(); // Usamos Map para almacenar el orden original
@@ -1653,6 +1686,131 @@ function obtenerAniosUnicos() {
         }
     }
     return Array.from(aniosSet).sort((a, b) => b - a);
+}
+
+// Actualizar el texto del botón de años
+function actualizarTextoBtnAnios() {
+    const btn = document.getElementById("consolidadoAnioDropdownBtn");
+    if (btn) {
+        const total = consolidadoAniosDisponibles.length;
+        const count = consolidadoAniosSeleccionados.length;
+        
+        if (count === 0 || count === total) {
+            btn.innerHTML = `Seleccionar años <span style="font-size: 0.7rem;">▼</span>`;
+        } else {
+            btn.innerHTML = `${count} año${count !== 1 ? 's' : ''} seleccionado${count !== 1 ? 's' : ''} <span style="font-size: 0.7rem;">▼</span>`;
+        }
+    }
+}
+
+// Actualizar el texto del botón de meses
+function actualizarTextoBtnMeses() {
+    const btn = document.getElementById("consolidadoMesesDropdownBtn");
+    if (btn) {
+        const total = consolidadoMesesDisponibles.length;
+        const count = consolidadoMesesSeleccionados.length;
+        
+        if (count === 0 || count === total) {
+            btn.innerHTML = `Seleccionar meses <span style="font-size: 0.7rem;">▼</span>`;
+        } else {
+            btn.innerHTML = `${count} mes${count !== 1 ? 'es' : ''} seleccionado${count !== 1 ? 's' : ''} <span style="font-size: 0.7rem;">▼</span>`;
+        }
+    }
+}
+
+// Actualizar la lista de checkboxes de años
+function actualizarListaAniosDropdown() {
+    const container = document.getElementById("consolidadoAniosCheckboxList");
+    if (!container) return;
+    
+    const anios = obtenerAniosUnicos();
+    consolidadoAniosDisponibles = anios;
+    
+    if (anios.length === 0) {
+        container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay años disponibles</div>';
+        return;
+    }
+    
+    // Filtrar los años seleccionados que estén disponibles
+    consolidadoAniosTempSeleccionados = consolidadoAniosTempSeleccionados.filter(anio => anios.includes(anio));
+    
+    container.innerHTML = anios.map(anio => `
+        <label style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.75rem;">
+            <input type="checkbox" value="${anio}" style="cursor: pointer;" ${consolidadoAniosTempSeleccionados.includes(anio) ? 'checked' : ''}>
+            <span>${anio}</span>
+        </label>
+    `).join('');
+}
+
+// Inicializar dropdown de años
+function inicializarDropdownAnios() {
+    const dropdownBtn = document.getElementById("consolidadoAnioDropdownBtn");
+    const dropdown = document.getElementById("consolidadoAnioDropdown");
+    
+    if (!dropdownBtn || !dropdown) return;
+    
+    // Abrir/cerrar dropdown
+    dropdownBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+        } else {
+            // Sincronizar selección temporal con la actual
+            consolidadoAniosTempSeleccionados = [...consolidadoAniosSeleccionados];
+            actualizarListaAniosDropdown();
+            dropdown.style.display = "block";
+        }
+    });
+    
+    // Cerrar al hacer clic fuera
+    document.addEventListener("click", (e) => {
+        if (dropdown && !dropdown.contains(e.target) && e.target !== dropdownBtn) {
+            dropdown.style.display = "none";
+        }
+    });
+    
+    // Botón Seleccionar todos
+    const selectAllBtn = document.getElementById("consolidadoSelectAllAnios");
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener("click", () => {
+            const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+        });
+    }
+    
+    // Botón Limpiar todos
+    const clearAllBtn = document.getElementById("consolidadoClearAllAnios");
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener("click", () => {
+            const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        });
+    }
+    
+    // Botón Cancelar
+    const cancelarBtn = document.getElementById("consolidadoCancelarAnios");
+    if (cancelarBtn) {
+        cancelarBtn.addEventListener("click", () => {
+            dropdown.style.display = "none";
+        });
+    }
+    
+    // Botón Aceptar
+    const aceptarBtn = document.getElementById("consolidadoAceptarAnios");
+    if (aceptarBtn) {
+        aceptarBtn.addEventListener("click", () => {
+            const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
+            consolidadoAniosSeleccionados = [];
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    consolidadoAniosSeleccionados.push(parseInt(cb.value));
+                }
+            });
+            dropdown.style.display = "none";
+            renderizarConsolidado();
+            actualizarTextoBtnAnios();
+        });
+    }
 }
 
 // Nueva función: Obtener meses disponibles según el año seleccionado
@@ -1769,19 +1927,39 @@ function actualizarListaMesesDropdown() {
     const container = document.getElementById("consolidadoMesesCheckboxList");
     if (!container) return;
     
-    // Obtener meses según el año seleccionado
-    const meses = consolidadoAnioSeleccionado === "todos" 
-        ? consolidadoMesesDisponibles 
-        : obtenerMesesPorAnio(parseInt(consolidadoAnioSeleccionado));
+    // Obtener todos los meses de los años seleccionados
+    let todosMeses = [];
+    if (consolidadoAniosSeleccionados.length > 0) {
+        for (const anio of consolidadoAniosSeleccionados) {
+            const mesesDelAnio = obtenerMesesPorAnio(anio);
+            todosMeses.push(...mesesDelAnio);
+        }
+    } else {
+        todosMeses = obtenerMesesUnicos();
+    }
+    
+    // Eliminar duplicados y ordenar
+    const mesesSet = new Map();
+    for (const mes of todosMeses) {
+        const match = mes.match(/(\w+)\s+(\d{4})/);
+        if (match) {
+            const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
+            mesesSet.set(mes, orden);
+        }
+    }
+    const meses = Array.from(mesesSet.keys()).sort((a, b) => {
+        return mesesSet.get(a).localeCompare(mesesSet.get(b));
+    });
+    
+    consolidadoMesesDisponibles = meses;
     
     if (meses.length === 0) {
-        container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay meses disponibles para este año</div>';
+        container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay meses disponibles para los años seleccionados</div>';
         return;
     }
     
-    // Filtrar los meses seleccionados que estén disponibles en el año actual
-    const mesesDisponiblesSet = new Set(meses);
-    consolidadoMesesTempSeleccionados = consolidadoMesesTempSeleccionados.filter(mes => mesesDisponiblesSet.has(mes));
+    // Filtrar los meses seleccionados que estén disponibles
+    consolidadoMesesTempSeleccionados = consolidadoMesesTempSeleccionados.filter(mes => meses.includes(mes));
     
     container.innerHTML = meses.map(mes => `
         <label style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.75rem;">
@@ -1800,31 +1978,40 @@ function renderizarConsolidado() {
         return;
     }
     
-    const { datos, meses, proveedores } = calcularConsolidado();
-    
-    if (proveedores.length === 0) {
-        container.innerHTML = '<div class="loading">No hay proveedores que cumplan los criterios (Generado AP=SI y Tipo Proceso=AUTOMÁTICO)</div>';
-        return;
+    // INICIALIZAR años seleccionados si está vacío
+    if (consolidadoAniosSeleccionados.length === 0) {
+        consolidadoAniosSeleccionados = obtenerAniosUnicos();
     }
     
-    // Actualizar select de años
-    const selectAnio = document.getElementById("consolidadoAnioSelect");
-    if (selectAnio) {
-        const aniosDisponibles = obtenerAniosUnicos();
-        let options = '<option value="todos">Todos los años</option>';
-        for (const anio of aniosDisponibles) {
-            options += `<option value="${anio}">${anio}</option>`;
+    actualizarTextoBtnAnios();
+    actualizarTextoBtnMeses();
+
+    // Obtener todos los meses de los años seleccionados
+    let todosMeses = [];
+    if (consolidadoAniosSeleccionados.length > 0) {
+        for (const anio of consolidadoAniosSeleccionados) {
+            const mesesDelAnio = obtenerMesesPorAnio(anio);
+            todosMeses.push(...mesesDelAnio);
         }
-        selectAnio.innerHTML = options;
-        selectAnio.value = consolidadoAnioSeleccionado;
+    } else {
+        todosMeses = obtenerMesesUnicos();
     }
     
-    // Actualizar meses disponibles según año seleccionado
-    if (consolidadoAnioSeleccionado === "todos") {
-        consolidadoMesesDisponibles = meses;
-    } else {
-        consolidadoMesesDisponibles = obtenerMesesPorAnio(parseInt(consolidadoAnioSeleccionado));
+    // Eliminar duplicados y ordenar meses
+    const mesesSet = new Map();
+    for (const mes of todosMeses) {
+        const match = mes.match(/(\w+)\s+(\d{4})/);
+        if (match) {
+            const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
+            mesesSet.set(mes, orden);
+        }
     }
+    const mesesUnicos = Array.from(mesesSet.keys()).sort((a, b) => {
+        return mesesSet.get(a).localeCompare(mesesSet.get(b));
+    });
+    
+    // Actualizar meses disponibles y seleccionados
+    consolidadoMesesDisponibles = mesesUnicos;
     
     if (consolidadoMesesSeleccionados.length === 0 || 
         !consolidadoMesesSeleccionados.some(m => consolidadoMesesDisponibles.includes(m))) {
@@ -1832,25 +2019,34 @@ function renderizarConsolidado() {
     }
     consolidadoMesesTempSeleccionados = [...consolidadoMesesSeleccionados];
     
+    // Actualizar la lista de checkboxes de meses
     actualizarListaMesesDropdown();
     
-    const mesesFiltrados = meses.filter(m => consolidadoMesesDisponibles.includes(m) && consolidadoMesesSeleccionados.includes(m));
+    // Filtrar meses a mostrar en la tabla
+    const mesesMostrar = mesesUnicos.filter(m => consolidadoMesesSeleccionados.includes(m));
     
-    // ========== CONSTRUCCIÓN CORRECTA DE LA TABLA ==========
+    const { datos, proveedores } = calcularConsolidado();
+    
+    if (proveedores.length === 0) {
+        container.innerHTML = '<div class="loading">No hay proveedores que cumplan los criterios (Generado AP=SI y Tipo Proceso=AUTOMÁTICO)</div>';
+        return;
+    }
+    
+    // CONSTRUCCIÓN DE LA TABLA
     let html = '<table class="consolidado-tabla">';
     
     // PRIMERA FILA: NOMBRE PROVEEDOR + MESES (con colspan=4)
     html += '<thead>';
     html += '<tr>';
     html += '<th rowspan="2">NOMBRE PROVEEDOR</th>';
-    for (const mes of mesesFiltrados) {
+    for (const mes of mesesMostrar) {
         html += `<th colspan="4">${mes}</th>`;
     }
     html += '</tr>';
     
     // SEGUNDA FILA: SUBCOLUMNAS para cada mes
     html += '<tr>';
-    for (let i = 0; i < mesesFiltrados.length; i++) {
+    for (let i = 0; i < mesesMostrar.length; i++) {
         html += '<th>ENTRADAS TOTALES</th>';
         html += '<th>ENTRADAS EMPATADAS</th>';
         html += '<th>ERS SIN XML</th>';
@@ -1864,7 +2060,7 @@ function renderizarConsolidado() {
     for (const proveedor of proveedores) {
         html += '<tr>';
         html += `<td style="text-align:left; font-weight:500;">${escapeHtml(proveedor)}</td>`;
-        for (const mes of mesesFiltrados) {
+        for (const mes of mesesMostrar) {
             const data = datos[proveedor][mes] || { totales: 0, empatadas: 0 };
             const totales = data.totales;
             const empatadas = data.empatadas;
@@ -1876,7 +2072,7 @@ function renderizarConsolidado() {
             const porcentajeFormateado = porcentaje.toFixed(2) + '%';
             
             let porcentajeStyle = '';
-            if (porcentaje > 50) {
+            if (porcentaje > 45) {
                 porcentajeStyle = 'style="background:#fee2e2; color:#b91c1c; font-weight:bold;"';
             } else if (porcentaje > 25) {
                 porcentajeStyle = 'style="background:#fff3e0; color:#e67e22; font-weight:bold;"';
@@ -1894,7 +2090,7 @@ function renderizarConsolidado() {
     html += '</tbody>';
     html += '</table>';
     
-    if (mesesFiltrados.length === 0) {
+    if (mesesMostrar.length === 0) {
         html = '<div class="loading">No hay meses seleccionados. Selecciona al menos un mes en el filtro.</div>';
     }
     
@@ -1905,19 +2101,8 @@ function renderizarConsolidado() {
 function inicializarDropdownMeses() {
     const dropdownBtn = document.getElementById("consolidadoMesesDropdownBtn");
     const dropdown = document.getElementById("consolidadoMesesDropdown");
-    const selectAnio = document.getElementById("consolidadoAnioSelect");
     
     if (!dropdownBtn || !dropdown) return;
-    
-    // Evento para cambio de año
-    if (selectAnio) {
-        selectAnio.addEventListener("change", (e) => {
-            consolidadoAnioSeleccionado = e.target.value;
-            // Resetear selección de meses al cambiar de año
-            consolidadoMesesSeleccionados = [];
-            renderizarConsolidado();
-        });
-    }
     
     // Abrir/cerrar dropdown
     dropdownBtn.addEventListener("click", (e) => {
@@ -1978,13 +2163,11 @@ function inicializarDropdownMeses() {
             });
             dropdown.style.display = "none";
             renderizarConsolidado();
+            actualizarTextoBtnMeses();
         });
     }
 }
-
-// Inicializar dropdown de meses para consolidado
-inicializarDropdownMeses();
-    
+   
     init();
 </script>
 </body>
