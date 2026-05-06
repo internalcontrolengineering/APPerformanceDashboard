@@ -535,6 +535,28 @@
     background-color: #f8fafc;
 }
 
+/* Media queries añadidos al final del CSS existente: */
+@media (max-width: 768px) {
+    .header { padding: 0.75rem 1rem; }
+    .header h1 { font-size: 1.1rem; }
+    .tab-btn { padding: 0.75rem 0.8rem; font-size: 0.75rem; }
+    .tab-content { padding: 1rem; }
+    .card { padding: 1rem; }
+    .stat-card { min-width: 120px; padding: 0.75rem; }
+    th, td { padding: 6px 4px; font-size: 0.65rem; }
+    .btn-group { gap: 8px; }
+    button:not(.tab-btn) { padding: 6px 10px; font-size: 0.7rem; }
+}
+
+@media (max-width: 480px) {
+    .header h1 { font-size: 0.9rem; }
+    .tab-btn { padding: 0.5rem 0.5rem; font-size: 0.65rem; }
+    .card-title { font-size: 1rem; }
+    .stat-card { min-width: 100px; padding: 0.5rem; font-size: 0.7rem; }
+    .table-wrapper { max-height: 400px; }
+    th, td { padding: 4px 2px; font-size: 0.55rem; }
+}
+
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 </head>
