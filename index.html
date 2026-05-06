@@ -546,6 +546,15 @@
     th, td { padding: 6px 4px; font-size: 0.65rem; }
     .btn-group { gap: 8px; }
     button:not(.tab-btn) { padding: 6px 10px; font-size: 0.7rem; }
+    
+    /* NUEVO: Reduce espacio entre filas de encabezados en tabla consolidado */
+    .consolidado-tabla thead tr:first-child th {
+        padding-bottom: 0px !important;
+    }
+    .consolidado-tabla thead tr:last-child th {
+        padding-top: 0px !important;
+        padding-bottom: 2px !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -555,6 +564,15 @@
     .stat-card { min-width: 100px; padding: 0.5rem; font-size: 0.7rem; }
     .table-wrapper { max-height: 400px; }
     th, td { padding: 4px 2px; font-size: 0.55rem; }
+    
+    /* NUEVO: Aún más reducido para celulares pequeños */
+    .consolidado-tabla thead tr:first-child th {
+        padding-bottom: 0px !important;
+    }
+    .consolidado-tabla thead tr:last-child th {
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+    }
 }
 
     </style>
