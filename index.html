@@ -521,7 +521,24 @@
 .consolidado-tabla thead tr:last-child th:first-child {
     z-index: 25;
 }
+/* Estilos para la tabla resumen general */
+#resumen-general-wrapper table {
+    font-size: 0.75rem;
+}
 
+#resumen-general-wrapper th {
+    padding: 10px 8px;
+    white-space: nowrap;
+}
+
+#resumen-general-wrapper td {
+    padding: 8px 12px;
+    white-space: nowrap;
+}
+
+#resumen-general-wrapper tr:hover td {
+    background-color: #f8fafc;
+}
 
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
@@ -589,7 +606,15 @@
     </div>
 </div>
         
-        <!-- Tabla de resultados -->
+        <!-- Tabla Resumen General -->
+        <div class="card" style="margin-bottom: 1rem; padding: 1rem;">
+            <div class="card-title" style="font-size: 1.1rem;">📈 Resumen General por Mes</div>
+            <div class="table-wrapper" id="resumen-general-wrapper" style="max-height: 300px;">
+                <div class="loading">Cargando resumen...</div>
+            </div>
+        </div>
+
+        <!-- Tabla de resultados por proveedor -->
         <div class="table-wrapper" id="consolidado-tabla-wrapper">
             <div class="loading">Cargando datos...</div>
         </div>
@@ -1922,6 +1947,191 @@ function calcularConsolidado() {
     return { datos, meses, proveedores };
 }
 
+// Calcular resumen general por mes
+function calcularResumenGeneral() {
+    // Obtener meses disponibles según años seleccionados
+    let mesesDisponibles = [];
+    if (consolidadoAniosSeleccionados.length > 0) {
+        for (const anio of consolidadoAniosSeleccionados) {
+            const mesesDelAnio = obtenerMesesPorAnio(anio);
+            mesesDisponibles.push(...mesesDelAnio);
+        }
+    } else {
+        mesesDisponibles = obtenerMesesUnicos();
+    }
+    
+    // Eliminar duplicados y ordenar meses
+    const mesesSet = new Map();
+    for (const mes of mesesDisponibles) {
+        const match = mes.match(/(\w+)\s+(\d{4})/);
+        if (match) {
+            const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
+            mesesSet.set(mes, orden);
+        }
+    }
+    const mesesOrdenados = Array.from(mesesSet.keys()).sort((a, b) => {
+        return mesesSet.get(a).localeCompare(mesesSet.get(b));
+    });
+    
+    // Filtrar por meses seleccionados en el filtro
+    const mesesMostrar = mesesOrdenados.filter(m => consolidadoMesesSeleccionados.includes(m));
+    
+    // Inicializar acumuladores
+    let acumuladoTotales = 0;
+    let acumuladoAutomaticas = 0;
+    
+    const resultados = {};
+    
+    for (const mes of mesesMostrar) {
+        // Extraer año del mes (formato "ENERO 2026")
+        const match = mes.match(/(\w+)\s+(\d{4})/);
+        const mesNombre = match[1];
+        const anio = parseInt(match[2]);
+        
+        // Calcular totales y automáticas para este mes
+        let totalesMes = 0;
+        let automaticasMes = 0;
+        
+        for (const rec of databaseRecords) {
+            const tipoProceso = (rec.tipoProceso || "").toUpperCase();
+            if (tipoProceso !== "AUTOMÁTICO") continue;
+            
+            const mesKey = extraerMesKey(rec.fechaEntrada);
+            if (mesKey === mes) {
+                totalesMes++;
+                const generadoAP = (rec.generadoAP || "").toUpperCase();
+                if (generadoAP === "SI") {
+                    automaticasMes++;
+                }
+            }
+        }
+        
+        const ersSinXml = totalesMes - automaticasMes;
+        const porcentajeErs = totalesMes > 0 ? (ersSinXml / totalesMes) * 100 : 0;
+        const efectividad = totalesMes > 0 ? (automaticasMes / totalesMes) * 100 : 0;
+        
+        resultados[mes] = {
+            totales: totalesMes,
+            automaticas: automaticasMes,
+            ersSinXml: ersSinXml,
+            porcentajeErs: porcentajeErs,
+            efectividad: efectividad,
+            anio: anio
+        };
+        
+        // Acumular para el total del año
+        acumuladoTotales += totalesMes;
+        acumuladoAutomaticas += automaticasMes;
+    }
+    
+    const acumuladoErsSinXml = acumuladoTotales - acumuladoAutomaticas;
+    const acumuladoPorcentajeErs = acumuladoTotales > 0 ? (acumuladoErsSinXml / acumuladoTotales) * 100 : 0;
+    const acumuladoEfectividad = acumuladoTotales > 0 ? (acumuladoAutomaticas / acumuladoTotales) * 100 : 0;
+    
+    return {
+        meses: mesesMostrar,
+        datos: resultados,
+        acumulado: {
+            totales: acumuladoTotales,
+            automaticas: acumuladoAutomaticas,
+            ersSinXml: acumuladoErsSinXml,
+            porcentajeErs: acumuladoPorcentajeErs,
+            efectividad: acumuladoEfectividad
+        }
+    };
+}
+
+// Renderizar tabla resumen general
+function renderizarResumenGeneral() {
+    const container = document.getElementById("resumen-general-wrapper");
+    if (!container) return;
+    
+    if (databaseRecords.length === 0) {
+        container.innerHTML = '<div class="loading">No hay datos cargados</div>';
+        return;
+    }
+    
+    const resumen = calcularResumenGeneral();
+    
+    if (resumen.meses.length === 0) {
+        container.innerHTML = '<div class="loading">No hay datos para los filtros seleccionados</div>';
+        return;
+    }
+    
+    // Construir la tabla
+    let html = '<table style="min-width: 600px;">';
+    html += '<thead>';
+    
+    // Primera fila: Concepto + Meses + ACUMULADO
+    html += '<tr>';
+    html += '<th rowspan="2" style="background:#0A2540; color:white;">CONCEPTO</th>';
+    for (const mes of resumen.meses) {
+        const mesCorto = mes.substring(0, 3).toUpperCase() + "'" + resumen.datos[mes].anio.toString().slice(-2);
+        html += `<th colspan="2" style="text-align:center; background:#0A2540; color:white;">${mesCorto}</th>`;
+    }
+    html += `<th colspan="2" style="text-align:center; background:#0A2540; color:white;">ACUMULADO ${resumen.meses.length > 0 ? resumen.datos[resumen.meses[0]].anio : '2026'}</th>`;
+    html += '</tr>';
+    
+    // Segunda fila: subtítulos
+    html += '<tr>';
+    for (let i = 0; i < resumen.meses.length; i++) {
+        html += '<th style="background:#f1f5f9;">TOTALES</th>';
+        html += '<th style="background:#f1f5f9;">ERS SIN XML</th>';
+    }
+    html += '<th style="background:#f1f5f9;">TOTALES</th>';
+    html += '<th style="background:#f1f5f9;">ERS SIN XML</th>';
+    html += '</tr>';
+    html += '</thead>';
+    
+    html += '<tbody>';
+    
+    // Fila 1: Entradas Totales
+    html += '<tr>';
+    html += '<td style="font-weight:600; background:#f8fafc;">Entradas Totales</td>';
+    for (const mes of resumen.meses) {
+        html += `<td style="text-align:right;">${resumen.datos[mes].totales.toLocaleString()}</td>`;
+        html += `<td style="text-align:right; color:#b91c1c; font-weight:500;">${resumen.datos[mes].ersSinXml.toLocaleString()}</td>`;
+    }
+    html += `<td style="text-align:right; font-weight:600; background:#e6f7ec;">${resumen.acumulado.totales.toLocaleString()}</td>`;
+    html += `<td style="text-align:right; font-weight:600; color:#b91c1c; background:#fee2e2;">${resumen.acumulado.ersSinXml.toLocaleString()}</td>`;
+    html += '</tr>';
+    
+    // Fila 2: Entradas automáticas
+    html += '<tr>';
+    html += '<td style="font-weight:600; background:#f8fafc;">Entradas automáticas</td>';
+    for (const mes of resumen.meses) {
+        const porcentajeErs = resumen.datos[mes].porcentajeErs;
+        let colorErs = '#15803d';
+        if (porcentajeErs > 45) colorErs = '#b91c1c';
+        else if (porcentajeErs > 25) colorErs = '#e67e22';
+        html += `<td style="text-align:right;">${resumen.datos[mes].automaticas.toLocaleString()}</td>`;
+        html += `<td style="text-align:right; color:${colorErs}; font-weight:500;">${porcentajeErs.toFixed(2)}%</td>`;
+    }
+    const acumuladoColor = resumen.acumulado.porcentajeErs > 45 ? '#b91c1c' : (resumen.acumulado.porcentajeErs > 25 ? '#e67e22' : '#15803d');
+    html += `<td style="text-align:right; font-weight:600; background:#e6f7ec;">${resumen.acumulado.automaticas.toLocaleString()}</td>`;
+    html += `<td style="text-align:right; font-weight:600; color:${acumuladoColor}; background:#fff3e0;">${resumen.acumulado.porcentajeErs.toFixed(2)}%</td>`;
+    html += '</tr>';
+    
+    // Fila 3: % Efectividad
+    html += '<tr>';
+    html += '<td style="font-weight:600; background:#f8fafc;">% Efectividad</td>';
+    for (const mes of resumen.meses) {
+        const efectividad = resumen.datos[mes].efectividad;
+        let colorEfect = '#15803d';
+        if (efectividad < 55) colorEfect = '#b91c1c';
+        else if (efectividad < 75) colorEfect = '#e67e22';
+        html += `<td style="text-align:right; color:${colorEfect}; font-weight:500;" colspan="2">${efectividad.toFixed(2)}%</td>`;
+    }
+    const acumuladoColorEfect = resumen.acumulado.efectividad < 55 ? '#b91c1c' : (resumen.acumulado.efectividad < 75 ? '#e67e22' : '#15803d');
+    html += `<td style="text-align:right; font-weight:600; color:${acumuladoColorEfect}; background:#e6f7ec;" colspan="2">${resumen.acumulado.efectividad.toFixed(2)}%</td>`;
+    html += '</tr>';
+    
+    html += '</tbody>';
+    html += '</table>';
+    
+    container.innerHTML = html;
+}
+
 // Actualizar la lista de checkboxes en el dropdown
 function actualizarListaMesesDropdown() {
     const container = document.getElementById("consolidadoMesesCheckboxList");
@@ -2094,6 +2304,8 @@ function renderizarConsolidado() {
         html = '<div class="loading">No hay meses seleccionados. Selecciona al menos un mes en el filtro.</div>';
     }
     
+    renderizarResumenGeneral();
+
     container.innerHTML = html;
 }
 
