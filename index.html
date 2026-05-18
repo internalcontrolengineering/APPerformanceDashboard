@@ -493,7 +493,7 @@
     background: #f1f5f9;
     font-weight: 600;
     position: sticky;
-    top: 41px; /* Ajusta este valor según la altura real de la primera fila */
+    top: 41px;
     z-index: 15;
     border-bottom: 1px solid #e2e8f0;
 }
@@ -508,7 +508,6 @@
     z-index: 10;
 }
 
-/* Para que la primera columna también sea sticky cuando hay scroll horizontal */
 .consolidado-tabla thead tr:first-child th:first-child {
     z-index: 30;
 }
@@ -516,7 +515,7 @@
 .consolidado-tabla thead tr:last-child th:first-child {
     z-index: 25;
 }
-/* Estilos para la tabla resumen general */
+
 #resumen-general-wrapper table {
     font-size: 0.75rem;
 }
@@ -535,7 +534,6 @@
     background-color: #f8fafc;
 }
 
-/* Media queries añadidos al final del CSS existente: */
 @media (max-width: 768px) {
     .header { padding: 0.75rem 1rem; }
     .header h1 { font-size: 1.1rem; }
@@ -546,10 +544,8 @@
     th, td { padding: 6px 4px; font-size: 0.65rem; }
     .btn-group { gap: 8px; }
     button:not(.tab-btn) { padding: 6px 10px; font-size: 0.7rem; }
-    
-    /* NUEVO: Ajuste para tabla consolidado en tablets */
     .consolidado-tabla thead tr:last-child th {
-        top: 21px !important;  /* Reduce este valor si ves espacio, o aumentalo si se superponen */
+        top: 21px !important;
     }
 }
 
@@ -560,25 +556,136 @@
     .stat-card { min-width: 100px; padding: 0.5rem; font-size: 0.7rem; }
     .table-wrapper { max-height: 400px; }
     th, td { padding: 4px 2px; font-size: 0.55rem; }
-    
-    /* NUEVO: Ajuste para tabla consolidado en celulares */
     .consolidado-tabla thead tr:last-child th {
-        top: 18px !important;  /* Reduce este valor si ves espacio, o aumentalo si se superponen */
+        top: 18px !important;
     }
 }
 
+/* Estilos para control de perfiles */
+.app-container.login-hidden {
+    display: none;
+}
+
+.tab-btn.hidden-tab {
+    display: none !important;
+}
+
+#limpiarNubeBtn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: 12px;
+}
+
+#limpiarNubeBtn.hidden {
+    display: none;
+}
+
+/* Estilos adicionales para el modal moderno */
+#loginPerfil:focus {
+    border-color: #2B7A4B !important;
+    box-shadow: 0 0 0 3px rgba(43, 122, 75, 0.1) !important;
+}
+
+/* Temporizador de sesión flotante */
+.session-timer {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;  /* ← Cambia right por left */
+    background: #0A2540;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.session-timer span {
+    color: #ffd700;
+    font-family: monospace;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.session-timer:hover {
+    transform: scale(1.02);
+    background: #1a4a6e;
+}
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<!-- MODAL DE LOGIN -->
+<!-- MODAL DE LOGIN MODERNO AZUL -->
+<div id="loginModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0A2540 0%, #1a4a6e 100%); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 32px; padding: 40px; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);">
+        
+        <!-- Logo con fondo azul redondeado -->
+        <div style="background: linear-gradient(135deg, #0A2540, #1d4d6e); border-radius: 60px; padding: 12px 24px; display: inline-block; margin-bottom: 20px;">
+            <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoTesorer%C3%ADa.png" 
+                 alt="Logo Tesorería" 
+                 style="height: 55px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+        </div>
+        
+        <!-- Títulos -->
+        <h2 style="color: #0A2540; margin-bottom: 8px; font-size: 1.8rem; font-weight: 700;">Acceso al Sistema</h2>
+        <p style="color: #5b6e8c; margin-bottom: 30px; font-size: 0.85rem;">AP Performance Dashboard</p>
+        
+        <!-- Selector de Perfil -->
+        <div style="margin-bottom: 20px; text-align: left;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e293b;">👤 Perfil</label>
+            <select id="loginPerfil" style="width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 0.9rem; font-weight: 500; background: white; cursor: pointer; outline: none; transition: all 0.2s;">
+                <option value="administrativo">🗂️ Administrativo</option>
+                <option value="directivo">📊 Directivo</option>
+            </select>
+        </div>
+        
+        <!-- Campo Contraseña -->
+        <div style="margin-bottom: 28px; text-align: left;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e293b;">🔒 Contraseña</label>
+            <input type="password" id="loginPassword" 
+                   style="width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 0.9rem; outline: none; transition: all 0.2s; box-sizing: border-box;"
+                   placeholder="Ingrese su contraseña"
+                   onfocus="this.style.borderColor='#2B7A4B'; this.style.boxShadow='0 0 0 3px rgba(43,122,75,0.1)'"
+                   onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+        </div>
+        
+        <!-- Botón Ingresar -->
+        <button id="loginBtn" 
+                style="background: linear-gradient(135deg, #0A2540 0%, #1a4a6e 100%); color: white; border: none; padding: 14px; border-radius: 16px; font-size: 1rem; cursor: pointer; width: 100%; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 12px rgba(10,37,64,0.2);"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(10,37,64,0.3)'"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(10,37,64,0.2)'">
+            🚀 Ingresar
+        </button>
+        
+        <!-- Mensaje de error -->
+        <div id="loginError" style="color: #dc2626; margin-top: 20px; font-size: 0.8rem; display: none; background: #fee2e2; padding: 10px; border-radius: 12px;"></div>
+    </div>
+</div>
+
 <div class="app-container">
 <div class="header">
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoTesorer%C3%ADa.png" 
-             alt="Logo Tesorería" 
-             style="height: 50px; width: auto; object-fit: contain; border-radius: 8px;">
-        <div style="width: 2px; height: 40px; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.2) 100%);"></div>
-        <h1 style="margin: 0; flex: 1;">AP Performance Dashboard</h1>
+    <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoTesorer%C3%ADa.png" 
+                 alt="Logo Tesorería" 
+                 style="height: 50px; width: auto; object-fit: contain; border-radius: 8px;">
+            <div style="width: 2px; height: 40px; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.2) 100%);"></div>
+            <h1 style="margin: 0; flex: 1;">AP Performance Dashboard</h1>
+        </div>        
     </div>
 </div>
 
@@ -594,30 +701,25 @@
     <div class="card">
         <div class="card-title">📑 Resumen </div>
         
-        <!-- Filtro de año y meses - Estilos unificados -->
 <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-    <!-- Filtro de año -->
-<label style="font-weight: 600;">📅 Año(s):</label>
-<div style="position: relative; display: inline-block;">
-    <button id="consolidadoAnioDropdownBtn" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; min-width: 140px;">
-        Seleccionar años <span style="font-size: 0.7rem;">▼</span>
-    </button>
-    <div id="consolidadoAnioDropdown" style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #cbd5e1; border-radius: 8px; min-width: 200px; max-height: 300px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <div style="padding: 8px; border-bottom: 1px solid #e2e8f0;">
-            <button id="consolidadoSelectAllAnios" style="background: none; border: none; color: #2B7A4B; cursor: pointer; font-size: 0.7rem;">✓ Seleccionar todos</button>
-            <button id="consolidadoClearAllAnios" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 0.7rem; margin-left: 12px;">✗ Limpiar todos</button>
-        </div>
-        <div id="consolidadoAniosCheckboxList" style="padding: 8px 0;">
-            <!-- Los años se llenarán dinámicamente -->
-        </div>
-        <div style="padding: 8px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 8px;">
-            <button id="consolidadoCancelarAnios" style="background: none; border: none; color: #666; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Cancelar</button>
-            <button id="consolidadoAceptarAnios" style="background: #2B7A4B; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Aceptar</button>
+    <label style="font-weight: 600;">📅 Año(s):</label>
+    <div style="position: relative; display: inline-block;">
+        <button id="consolidadoAnioDropdownBtn" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; min-width: 140px;">
+            Seleccionar años <span style="font-size: 0.7rem;">▼</span>
+        </button>
+        <div id="consolidadoAnioDropdown" style="display: none; position: absolute; top: 100%; left: 0; background: white; border: 1px solid #cbd5e1; border-radius: 8px; min-width: 200px; max-height: 300px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="padding: 8px; border-bottom: 1px solid #e2e8f0;">
+                <button id="consolidadoSelectAllAnios" style="background: none; border: none; color: #2B7A4B; cursor: pointer; font-size: 0.7rem;">✓ Seleccionar todos</button>
+                <button id="consolidadoClearAllAnios" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 0.7rem; margin-left: 12px;">✗ Limpiar todos</button>
+            </div>
+            <div id="consolidadoAniosCheckboxList" style="padding: 8px 0;"></div>
+            <div style="padding: 8px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 8px;">
+                <button id="consolidadoCancelarAnios" style="background: none; border: none; color: #666; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Cancelar</button>
+                <button id="consolidadoAceptarAnios" style="background: #2B7A4B; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Aceptar</button>
+            </div>
         </div>
     </div>
-</div>
     
-    <!-- Filtro de meses -->
     <label style="font-weight: 600;">📆 Mes(es):</label>
     <div style="position: relative; display: inline-block;">
         <button id="consolidadoMesesDropdownBtn" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px;">
@@ -628,9 +730,7 @@
                 <button id="consolidadoSelectAllMeses" style="background: none; border: none; color: #2B7A4B; cursor: pointer; font-size: 0.7rem;">✓ Seleccionar todos</button>
                 <button id="consolidadoClearAllMeses" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 0.7rem; margin-left: 12px;">✗ Limpiar todos</button>
             </div>
-            <div id="consolidadoMesesCheckboxList" style="padding: 8px 0;">
-                <!-- Los meses se llenarán dinámicamente según el año seleccionado -->
-            </div>
+            <div id="consolidadoMesesCheckboxList" style="padding: 8px 0;"></div>
             <div style="padding: 8px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 8px;">
                 <button id="consolidadoCancelarMeses" style="background: none; border: none; color: #666; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Cancelar</button>
                 <button id="consolidadoAceptarMeses" style="background: #2B7A4B; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.7rem; padding: 4px 12px;">Aceptar</button>
@@ -639,15 +739,13 @@
     </div>
 </div>
         
-        <!-- Tabla Resumen General -->
         <div class="card" style="margin-bottom: 1rem; padding: 1rem;">
             <div class="card-title" style="font-size: 1.1rem;">🚥 Resumen General por Mes</div>
             <div class="table-wrapper" id="resumen-general-wrapper" style="max-height: 300px;">
-                <div class="loading">Cargando resumen...</div>
+                <div class="loading">No hay datos cargados</div>
             </div>
         </div>
 
-        <!-- Tabla de resultados por proveedor -->
         <div class="table-wrapper" id="consolidado-tabla-wrapper">
             <div class="loading">Cargando datos...</div>
         </div>
@@ -719,25 +817,477 @@
     </div>
 
 <footer style="background: #f8fafc; padding: 0.75rem 1.5rem; border-top: 1px solid #e9edf2;">
-    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
-        <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoCI-G.png" 
-             alt="Control Interno" 
-             style="height: 22px; width: auto; object-fit: contain; opacity: 0.5;">
-        <div style="width: 1px; height: 24px; background-color: #cbd5e1;"></div>
-        <div style="display: flex; flex-direction: column; line-height: 1.2;">
-            <span style="font-size: 0.5rem; color: #0A2540;">Control Interno</span>
-            <span style="font-size: 0.4rem; color: #94a3b8; font-weight: 500;">Ingeniería de Control</span>
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+        
+        <!-- Espacio vacío a la izquierda (para balancear) -->
+        <div style="width: 120px;"></div>
+        
+        <!-- Parte central: logos e información centrada -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; flex: 1;">
+            <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoCI-G.png" 
+                 alt="Control Interno" 
+                 style="height: 22px; width: auto; object-fit: contain; opacity: 0.5;">
+            <div style="width: 1px; height: 24px; background-color: #cbd5e1;"></div>
+            <div style="display: flex; flex-direction: column; line-height: 1.2; text-align: center;">
+                <span style="font-size: 0.5rem; color: #0A2540;">Control Interno</span>
+                <span style="font-size: 0.4rem; color: #94a3b8; font-weight: 500;">Ingeniería de Control</span>
+            </div>
+            <div style="width: 1px; height: 24px; background-color: #cbd5e1;"></div>
+            <div style="display: flex; flex-direction: column; line-height: 1.2; text-align: center;">
+                <span style="font-size: 0.5rem; color: #0A2540;">AP Performance Dashboard</span>
+                <span style="font-size: 0.4rem; color: #94a3b8; font-weight: 500;">V1.0 | Mayo 2026</span>
+            </div>
         </div>
-        <div style="width: 1px; height: 24px; background-color: #cbd5e1;"></div>
-        <div style="display: flex; flex-direction: column; line-height: 1.2;">
-            <span style="font-size: 0.5rem; color: #0A2540;">AP Performance Dashboard</span>
-            <span style="font-size: 0.4rem; color: #94a3b8; font-weight: 500;">V1.0 | Mayo 2026</span>
-        </div>
+        
+        <!-- Botón de cerrar sesión a la derecha -->
+        <button id="logoutBtn" style="background: #475569; color: white; border: none; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 500; width: 120px;">🚪 Cerrar sesión</button>
+        
     </div>
 </footer>
 </div>
 
 <script>
+    // ==================== SUPABASE MEJORADO (por tablas separadas) ====================
+    const SUPABASE_URL = 'https://hsskfqamnmdrastnmxkd.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhzc2tmcWFtbm1kcmFzdG5teGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NzczNTEsImV4cCI6MjA5NDM1MzM1MX0._QZB1yoY8weTNb3JjtrZcWHC_PWdx-QONYoTNn6dcb0';
+    
+    let supabaseClient = null;
+    let syncInProgress = false;
+    
+    function initSupabase() {
+        if (typeof supabase !== 'undefined' && supabase.createClient) {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✅ Supabase inicializado (versión mejorada)');
+            return true;
+        }
+        console.warn('⚠️ Supabase no disponible');
+        return false;
+    }
+    
+    async function syncToSupabase(silent = false) {
+        if (!supabaseClient || syncInProgress) return false;
+        
+        syncInProgress = true;
+        
+        try {
+            // REGLAS
+            if (reglasRecords.length > 0) {
+                const reglasToSend = reglasRecords.map(r => ({
+                    clave_proveedor: r.claveProveedor,
+                    nombre_proveedor: r.nombreProveedor,
+                    tipo: r.tipo || '',
+                    zona: r.zona || '',
+                    responsable: r.responsable || '',
+                    updated_at: new Date().toISOString()
+                }));
+                await supabaseClient.from('ap_reglas').upsert(reglasToSend, { onConflict: 'clave_proveedor' });
+            }
+
+            // REGISTROS
+            if (databaseRecords.length > 0) {
+                const recordsToSend = databaseRecords.map(r => ({
+                    folio_entrada: r.folioEntrada,
+                    fecha_entrada: r.fechaEntrada,
+                    clave_proveedor: r.claveProveedor,
+                    nombre_proveedor: r.nombreProveedor,
+                    generado_ap: r.generadoAP,
+                    factura: r.factura,
+                    pedido: r.pedido,
+                    tipo: r.tipo,
+                    tipo_proceso: r.tipoProceso || '',
+                    zona: r.zona || '',
+                    responsable: r.responsable || '',
+                    updated_at: new Date().toISOString()
+                }));
+
+                for (let i = 0; i < recordsToSend.length; i += 500) {
+                    const batch = recordsToSend.slice(i, i + 500);
+                    await supabaseClient.from('ap_records').upsert(batch, { onConflict: 'folio_entrada' });
+                }
+            }
+
+            if (!silent) {
+                console.log("✅ Auto-sincronización completada");
+            }
+            return true;
+
+        } catch (error) {
+            console.error("Error en auto-sync:", error);
+            if (!silent) alert("Error al sincronizar automáticamente: " + error.message);
+            return false;
+        } finally {
+            syncInProgress = false;
+        }
+    }
+
+// ==================== SISTEMA DE PERFILES Y AUTENTICACIÓN ====================
+let currentUserProfile = null;
+let sessionTimeout = null;
+let inactivityTimer = null;
+
+// ==================== CONFIGURACIÓN DE SESIÓN ====================
+const TIEMPO_SESION_MINUTOS = 10; // 👈 CAMBIA SOLO ESTE VALOR (en minutos)
+const TIEMPO_SESION_SEGUNDOS = TIEMPO_SESION_MINUTOS * 60; // 60 segundos por minuto
+
+let remainingTime = TIEMPO_SESION_SEGUNDOS;
+const PERFILES = {
+    ADMINISTRATIVO: {
+        nombre: 'administrativo',
+        password: 'ControlAdministrativo2026',
+        visibleTabs: ['consolidado', 'dashboard', 'basedatos', 'reglas', 'cargabatch'],
+        hiddenTabs: [],
+        showCleanCloudButton: true
+    },
+    DIRECTIVO: {
+        nombre: 'directivo',
+        password: 'ControlDirectivo2026',
+        visibleTabs: ['consolidado', 'dashboard'],
+        hiddenTabs: ['basedatos', 'reglas', 'cargabatch'],
+        showCleanCloudButton: false
+    }
+};
+
+function verificarCredenciales(perfil, password) {
+    if (perfil === 'administrativo' && password === PERFILES.ADMINISTRATIVO.password) {
+        return PERFILES.ADMINISTRATIVO;
+    }
+    if (perfil === 'directivo' && password === PERFILES.DIRECTIVO.password) {
+        return PERFILES.DIRECTIVO;
+    }
+    return null;
+}
+
+function aplicarPermisosPorPerfil(perfil) {
+    currentUserProfile = perfil.nombre;
+    
+    // Ocultar todas las pestañas primero
+    const allTabs = document.querySelectorAll('.tab-btn');
+    allTabs.forEach(tab => {
+        tab.classList.add('hidden-tab');
+    });
+    
+    // Mostrar solo las pestañas permitidas
+    perfil.visibleTabs.forEach(tabId => {
+        const tabButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+        if (tabButton) {
+            tabButton.classList.remove('hidden-tab');
+        }
+    });
+    
+    // Ocultar botón "Limpiar Nube" si el perfil no debe verlo
+    const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
+    if (cleanCloudBtn) {
+        if (perfil.showCleanCloudButton) {
+            cleanCloudBtn.classList.remove('hidden');
+        } else {
+            cleanCloudBtn.classList.add('hidden');
+        }
+    }
+    
+    // Si el perfil actual no tiene acceso a la pestaña activa, cambiar a la primera permitida
+    const activeTab = document.querySelector('.tab-content.active')?.id;
+    if (activeTab && !perfil.visibleTabs.includes(activeTab)) {
+        const firstVisibleTab = perfil.visibleTabs[0];
+        if (firstVisibleTab) {
+            document.querySelector(`.tab-btn[data-tab="${firstVisibleTab}"]`)?.click();
+        }
+    }
+    
+    // Reorganizar las pestañas visibles (mostrar solo las permitidas)
+    const tabsContainer = document.querySelector('.tabs-nav');
+    const visibleButtons = Array.from(allTabs).filter(btn => !btn.classList.contains('hidden-tab'));
+    
+    // Reordenar físicamente las pestañas (opcional, para que se vean ordenadas)
+    visibleButtons.forEach(btn => {
+        tabsContainer.appendChild(btn);
+    });
+    
+    console.log(`✅ Perfil ${perfil.nombre.toUpperCase()} activado. Pestañas visibles:`, perfil.visibleTabs);
+}
+
+function mostrarModalLogin() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.querySelector('.app-container').classList.add('login-hidden');
+    }
+}
+
+function ocultarModalLogin() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.querySelector('.app-container').classList.remove('login-hidden');
+    }
+}
+
+function initLoginSystem() {
+    const loginBtn = document.getElementById('loginBtn');
+    const passwordInput = document.getElementById('loginPassword');
+    const perfilSelect = document.getElementById('loginPerfil');
+    const errorDiv = document.getElementById('loginError');
+    
+    let sessionTimeout = null;
+    let inactivityTimer = null;
+    let remainingTimeGlobal = TIEMPO_SESION_SEGUNDOS;
+    
+    function resetInactivityTimer() {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        if (sessionTimeout) clearInterval(sessionTimeout);
+        
+        if (currentUserProfile) {
+            remainingTimeGlobal = TIEMPO_SESION_SEGUNDOS;
+            updateTimerDisplay();
+            
+            sessionTimeout = setInterval(() => {
+                if (remainingTimeGlobal > 0) {
+                    remainingTimeGlobal--;
+                    updateTimerDisplay();
+                    if (remainingTimeGlobal === 0) {
+                        cerrarSesionPorInactividad();
+                    }
+                }
+            }, 1000);
+        }
+    }
+    
+    function updateTimerDisplay() {
+    let timerElement = document.getElementById('sessionTimer');
+    if (!timerElement && currentUserProfile) {
+        // Crear el elemento flotante
+        const timerDiv = document.createElement('div');
+        timerDiv.id = 'sessionTimer';
+        timerDiv.className = 'session-timer';
+        const minutosIniciales = Math.floor(TIEMPO_SESION_SEGUNDOS / 60);
+        const segundosIniciales = TIEMPO_SESION_SEGUNDOS % 60;
+        timerDiv.innerHTML = `⏱️ <span id="timerValue">${minutosIniciales.toString().padStart(2, '0')}:${segundosIniciales.toString().padStart(2, '0')}</span>`;
+        document.body.appendChild(timerDiv); // ← Cambiado a document.body
+        timerElement = timerDiv;
+    }
+    
+    if (timerElement) {
+        const minutes = Math.floor(remainingTimeGlobal / 60);
+        const seconds = remainingTimeGlobal % 60;
+        const timerSpan = document.getElementById('timerValue');
+        if (timerSpan) {
+            timerSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }
+    
+    if (!currentUserProfile && timerElement) {
+        timerElement.remove();
+    }
+}
+    
+    function cerrarSesionPorInactividad() {
+        if (currentUserProfile) {
+            if (sessionTimeout) clearInterval(sessionTimeout);
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            
+            alert(`⏰ Sesión expirada por inactividad (${TIEMPO_SESION_MINUTOS} minuto${TIEMPO_SESION_MINUTOS !== 1 ? 's' : ''}). Por favor, inicie sesión nuevamente.`);
+            sessionStorage.removeItem('userProfile');
+            currentUserProfile = null;
+            mostrarModalLogin();
+            
+            const allTabs = document.querySelectorAll('.tab-btn');
+            allTabs.forEach(tab => tab.classList.remove('hidden-tab'));
+            const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
+            if (cleanCloudBtn) cleanCloudBtn.classList.remove('hidden');
+            
+            const timerElement = document.getElementById('sessionTimer');
+            if (timerElement) timerElement.remove();
+        }
+    }
+    
+    function setupInactivityListeners() {
+        const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+        events.forEach(event => {
+            document.removeEventListener(event, resetInactivityTimer);
+            document.addEventListener(event, resetInactivityTimer);
+        });
+    }
+    
+    function intentarLogin() {
+        const perfil = perfilSelect.value;
+        const password = passwordInput.value;
+        const perfilValido = verificarCredenciales(perfil, password);
+        
+        if (perfilValido) {
+            sessionStorage.setItem('userProfile', JSON.stringify({
+                nombre: perfilValido.nombre,
+                visibleTabs: perfilValido.visibleTabs,
+                hiddenTabs: perfilValido.hiddenTabs,
+                showCleanCloudButton: perfilValido.showCleanCloudButton,
+                loginTime: Date.now()
+            }));
+            
+            currentUserProfile = perfilValido.nombre;
+            aplicarPermisosPorPerfil(perfilValido);
+            ocultarModalLogin();
+            errorDiv.style.display = 'none';
+            passwordInput.value = '';
+            
+            remainingTime = TIEMPO_SESION_SEGUNDOS;
+            updateTimerDisplay();
+            setupInactivityListeners();
+            resetInactivityTimer();
+        } else {
+            errorDiv.textContent = '❌ Contraseña incorrecta. Intente nuevamente.';
+            errorDiv.style.display = 'block';
+            passwordInput.value = '';
+            passwordInput.focus();
+        }
+    }
+    
+    // Verificar sesión guardada al cargar
+    const savedProfile = sessionStorage.getItem('userProfile');
+    if (savedProfile) {
+        try {
+            const perfilData = JSON.parse(savedProfile);
+            const tiempoTranscurrido = (Date.now() - perfilData.loginTime) / 1000;
+            
+            if (tiempoTranscurrido < TIEMPO_SESION_SEGUNDOS) {
+                const perfilObj = {
+                    nombre: perfilData.nombre,
+                    visibleTabs: perfilData.visibleTabs,
+                    hiddenTabs: perfilData.hiddenTabs,
+                    showCleanCloudButton: perfilData.showCleanCloudButton,
+                    password: perfilData.nombre === 'administrativo' ? PERFILES.ADMINISTRATIVO.password : PERFILES.DIRECTIVO.password
+                };
+                
+                currentUserProfile = perfilData.nombre;
+                remainingTime = TIEMPO_SESION_SEGUNDOS - Math.floor(tiempoTranscurrido);
+                aplicarPermisosPorPerfil(perfilObj);
+                ocultarModalLogin();
+                updateTimerDisplay();
+                setupInactivityListeners();
+                resetInactivityTimer();
+            } else {
+                sessionStorage.removeItem('userProfile');
+                mostrarModalLogin();
+            }
+        } catch(e) {
+            mostrarModalLogin();
+        }
+    } else {
+        mostrarModalLogin();
+    }
+    
+    loginBtn.addEventListener('click', intentarLogin);
+    passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') intentarLogin();
+    });
+}
+
+// ==================== NUEVA FUNCIÓN: LIMPIAR NUBE ====================
+    async function clearCloudData() {
+        if (!supabaseClient) return alert("Supabase no disponible");
+       
+        if (!confirm("⚠️ ¿Borrar TODA la información de la NUBE?\n\nEsta acción es irreversible.")) return;
+       
+        const progressMsg = document.createElement('div');
+        progressMsg.style.cssText = 'position:fixed; top:20px; right:20px; background:#dc2626; color:white; padding:12px 20px; border-radius:8px; z-index:9999;';
+        progressMsg.textContent = '🗑️ Limpiando nube...';
+        document.body.appendChild(progressMsg);
+
+        try {
+            await supabaseClient.from('ap_reglas').delete().gt('clave_proveedor', '');
+            await supabaseClient.from('ap_records').delete().gt('folio_entrada', '');
+           
+            progressMsg.style.background = '#15803d';
+            progressMsg.textContent = '✅ Nube limpiada correctamente';
+            setTimeout(() => progressMsg.remove(), 2500);
+           
+            await loadFromSupabase(); // recargar después de limpiar
+        } catch (error) {
+            console.error(error);
+            progressMsg.textContent = '❌ Error: ' + error.message;
+            setTimeout(() => progressMsg.remove(), 5000);
+        }
+    }
+    
+    async function loadFromSupabase() {
+        if (!supabaseClient) return false;
+        
+        try {
+            console.log("🔄 Forzando carga fresca desde Supabase...");
+
+            // === 1. Siempre limpiar primero los datos locales ===
+            databaseRecords = [];
+            reglasRecords = [];
+            filteredData = [];
+            reglasFilteredData = [];
+
+            // === 2. Cargar Reglas ===
+            const { data: reglasData } = await supabaseClient
+                .from('ap_reglas')
+                .select('*');
+            
+            if (reglasData && reglasData.length > 0) {
+                reglasRecords = reglasData.map(r => ({
+                    claveProveedor: r.clave_proveedor,
+                    nombreProveedor: r.nombre_proveedor,
+                    tipo: r.tipo,
+                    zona: r.zona,
+                    responsable: r.responsable
+                }));
+            }
+            await saveAllReglasToDB();
+
+            // === 3. Cargar Registros (paginado) ===
+            let allRecords = [];
+            let from = 0;
+            const limit = 1000;
+
+            while (true) {
+                const { data, error } = await supabaseClient
+                    .from('ap_records')
+                    .select('*')
+                    .range(from, from + limit - 1);
+
+                if (error) throw error;
+                if (!data || data.length === 0) break;
+
+                allRecords = allRecords.concat(data);
+                from += limit;
+            }
+
+            if (allRecords.length > 0) {
+                databaseRecords = allRecords.map(r => ({
+                    folioEntrada: r.folio_entrada,
+                    fechaEntrada: r.fecha_entrada,
+                    claveProveedor: r.clave_proveedor,
+                    nombreProveedor: r.nombre_proveedor,
+                    generadoAP: r.generado_ap,
+                    factura: r.factura,
+                    pedido: r.pedido,
+                    tipo: r.tipo,
+                    tipoProceso: r.tipo_proceso || '',
+                    zona: r.zona || '',
+                    responsable: r.responsable || ''
+                }));
+            } else {
+                console.log("ℹ️ Supabase está vacío → app queda limpia");
+            }
+            
+            await saveAllRecordsToDB();
+
+            // === 4. Actualizar toda la interfaz ===
+            applyFiltersAndRender();
+            applyReglasFiltersAndRender();
+            renderizarConsolidado();
+            updateDashboardStats();
+
+            console.log(`✅ Sincronizado correctamente: ${databaseRecords.length} registros`);
+            return true;
+
+        } catch (error) {
+            console.error('Error cargando desde Supabase:', error);
+            alert("Error al cargar datos desde la nube: " + error.message);
+            return false;
+        }
+    }
+
     // ==================== BASE DE DATOS PRINCIPAL ====================
     const DB_NAME = 'AP_Dashboard_DB';
     const STORE_NAME = 'registros';
@@ -817,6 +1367,23 @@
         });
     }
 
+    async function saveAllReglasToDB() {
+        if (!reglasDB) await openReglasDB();
+        return new Promise((resolve, reject) => {
+            const transaction = reglasDB.transaction([REGLAS_STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(REGLAS_STORE_NAME);
+            const clearRequest = store.clear();
+            clearRequest.onsuccess = () => {
+                for (const rec of reglasRecords) {
+                    store.add(rec);
+                }
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = () => reject(transaction.error);
+            };
+            clearRequest.onerror = () => reject(clearRequest.error);
+        });
+    }
+
     async function actualizarBaseDatosPorReglas() {
         if (reglasRecords.length === 0) return;
         await aplicarReglasABaseDeDatos();
@@ -830,6 +1397,7 @@
             applyFilters();
             renderCurrentPage();
             updateDashboardStats();
+            renderizarConsolidado();
         };
     }
 
@@ -855,25 +1423,25 @@
             const store = transaction.objectStore(STORE_NAME);
             const request = store.getAll();
             request.onsuccess = async () => {
-    databaseRecords = request.result || [];
-    databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
-    if (reglasRecords && reglasRecords.length > 0) {
-        await aplicarReglasABaseDeDatos();
-        const transaction2 = db.transaction([STORE_NAME], 'readonly');
-        const store2 = transaction2.objectStore(STORE_NAME);
-        const request2 = store2.getAll();
-        request2.onsuccess = () => {
-            databaseRecords = request2.result || [];
-            databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
-            renderizarConsolidado();  // <--- AGREGAR ESTA LÍNEA
-            resolve(databaseRecords);
-        };
-        request2.onerror = () => reject(request2.error);
-    } else {
-        renderizarConsolidado();  // <--- AGREGAR ESTA LÍNEA
-        resolve(databaseRecords);
-    }
-};
+                databaseRecords = request.result || [];
+                databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
+                if (reglasRecords && reglasRecords.length > 0) {
+                    await aplicarReglasABaseDeDatos();
+                    const transaction2 = db.transaction([STORE_NAME], 'readonly');
+                    const store2 = transaction2.objectStore(STORE_NAME);
+                    const request2 = store2.getAll();
+                    request2.onsuccess = () => {
+                        databaseRecords = request2.result || [];
+                        databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
+                        renderizarConsolidado();
+                        resolve(databaseRecords);
+                    };
+                    request2.onerror = () => reject(request2.error);
+                } else {
+                    renderizarConsolidado();
+                    resolve(databaseRecords);
+                }
+            };
             request.onerror = () => reject(request.error);
         });
     }
@@ -928,12 +1496,14 @@
             const transaction = db.transaction([STORE_NAME], 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
             let added = 0;
-            transaction.oncomplete = () => {
-                databaseRecords.push(...toAdd);
-                databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
-                uniqueValuesCache = {};
-                resolve(added);
-            };
+            transaction.oncomplete = async () => {
+            databaseRecords.push(...toAdd);
+            databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
+            uniqueValuesCache = {};
+            renderizarConsolidado();
+            await syncToSupabase(true);   // ← AUTO SYNC
+            resolve(added);
+        };
             transaction.onerror = () => reject(transaction.error);
             toAdd.forEach(rec => { store.add(rec); added++; });
         });
@@ -945,7 +1515,16 @@
             const transaction = db.transaction([STORE_NAME], 'readwrite');
             const store = transaction.objectStore(STORE_NAME);
             const request = store.clear();
-            request.onsuccess = () => { databaseRecords = []; uniqueValuesCache = {}; resolve(); };
+            request.onsuccess = () => { 
+                databaseRecords = []; 
+                uniqueValuesCache = {}; 
+                consolidadoAniosSeleccionados = [];
+                consolidadoMesesSeleccionados = [];
+                consolidadoAniosDisponibles = [];
+                consolidadoMesesDisponibles = [];
+                renderizarConsolidado(); 
+                resolve(); 
+            };
             request.onerror = () => reject(request.error);
         });
     }
@@ -989,12 +1568,14 @@
             const transaction = reglasDB.transaction([REGLAS_STORE_NAME], 'readwrite');
             const store = transaction.objectStore(REGLAS_STORE_NAME);
             let added = 0;
-            transaction.oncomplete = async () => {
-                reglasRecords.push(...toAdd);
-                reglasUniqueValuesCache = {};
-                await actualizarBaseDatosPorReglas();
-                resolve(added);
-            };
+                    transaction.oncomplete = async () => {
+            reglasRecords.push(...toAdd);
+            reglasUniqueValuesCache = {};
+            await actualizarBaseDatosPorReglas();
+            renderizarConsolidado();
+            await syncToSupabase(true);   // ← AUTO SYNC
+            resolve(added);
+        };
             transaction.onerror = () => reject(transaction.error);
             toAdd.forEach(rec => { store.add(rec); added++; });
         });
@@ -1006,7 +1587,17 @@
             const transaction = reglasDB.transaction([REGLAS_STORE_NAME], 'readwrite');
             const store = transaction.objectStore(REGLAS_STORE_NAME);
             const request = store.clear();
-            request.onsuccess = () => { reglasRecords = []; reglasUniqueValuesCache = {}; resolve(); };
+                        request.onsuccess = async () => { 
+                databaseRecords = []; 
+                uniqueValuesCache = {}; 
+                consolidadoAniosSeleccionados = [];
+                consolidadoMesesSeleccionados = [];
+                consolidadoAniosDisponibles = [];
+                consolidadoMesesDisponibles = [];
+                renderizarConsolidado(); 
+                await syncToSupabase(true);   // ← AUTO SYNC
+                resolve(); 
+            };
             request.onerror = () => reject(request.error);
         });
     }
@@ -1171,7 +1762,6 @@
 
     async function processFileToTarget(file, target) {
         if (!file) return;
-        const isExcel = /\.(xlsx|xls)$/i.test(file.name);
         showFeedback(`⏳ Procesando ${file.name}...`, "info");
         try {
             const data = await file.arrayBuffer();
@@ -1184,6 +1774,7 @@
                 const added = await saveRecords(records);
                 await loadAllRecords();
                 applyFiltersAndRender();
+                renderizarConsolidado();
                 if (added > 0) {
                     showFeedback(`✅ ${added} nuevos registros (Total: ${databaseRecords.length})`, "success");
                 } else {
@@ -1194,6 +1785,7 @@
                 const added = await saveReglas(records);
                 await loadAllReglas();
                 applyReglasFiltersAndRender();
+                renderizarConsolidado();
                 if (added > 0) {
                     showFeedback(`✅ ${added} nuevas reglas cargadas. Base de Datos actualizada automáticamente.`, "success");
                 } else {
@@ -1214,7 +1806,7 @@
         }
     }
 
-    // ==================== FUNCIONES PARA VALORES ÚNICOS EN MODO CASCADA ====================
+    // ==================== FUNCIONES PARA FILTROS ====================
     function getUniqueValuesFromData(field, dataSource) {
         const vals = new Set();
         for (const r of dataSource) {
@@ -1272,7 +1864,7 @@
                         </div>
                     </th>`;
         }
-        html += `<tr></thead><tbody>`;
+        html += `</thead><tbody>`;
         
         if (pageData.length === 0) {
             html += `<tr class="empty-row"><td colspan="${columns.length}">No hay datos que coincidan con los filtros</td></tr>`;
@@ -1320,12 +1912,11 @@
                 const label = el.dataset.label;
                 const rect = el.getBoundingClientRect();
                 const currentSelected = currentFilters[field] || [];
-                createFilterDropdownCascada(field, label, rect, currentSelected, filteredData, true);
+                createFilterDropdown(field, label, rect, currentSelected, filteredData, true);
             });
         });
     }
     
-    // ==================== RENDERIZADO REGLAS ====================
     function applyReglasFilters() {
         if (Object.keys(reglasCurrentFilters).length === 0) {
             reglasFilteredData = [...reglasRecords];
@@ -1351,37 +1942,27 @@
         const pageData = reglasFilteredData.slice(start, end);
         const totalPages = Math.ceil(reglasFilteredData.length / PAGE_SIZE);
         
-        const columns = [
-            { key: 'claveProveedor', label: 'CLAVE PROVEEDOR' },
-            { key: 'nombreProveedor', label: 'NOMBRE PROVEEDOR' },
-            { key: 'tipo', label: 'TIPO PROCESO' },
-            { key: 'zona', label: 'ZONA' },
-            { key: 'responsable', label: 'RESPONSABLE' }
-        ];
-        
-        let html = '<table><thead><tr>';
-        for (const col of columns) {
-            const hasFilter = reglasCurrentFilters[col.key] && reglasCurrentFilters[col.key].length > 0;
-            html += `<th>
-                        <div class="th-content" data-field="${col.key}" data-label="${col.label}">
-                            ${col.label}
-                            <span class="filter-icon ${hasFilter ? 'active active-filter' : ''}">▼</span>
-                        </div>
-                    </th>`;
-        }
-        html += `</thead><tbody>`;
+        // CORREGIDO: Estructura de tabla HTML correcta
+        let html = '<table><thead>';
+        html += '<tr>';
+        html += '<th>CLAVE PROVEEDOR</th>';
+        html += '<th>NOMBRE PROVEEDOR</th>';
+        html += '<th>TIPO PROCESO</th>';
+        html += '<th>ZONA</th>';
+        html += '<th>RESPONSABLE</th>';
+        html += '</tr>';
+        html += '</thead><tbody>';
         
         if (pageData.length === 0) {
-            html += `<tr class="empty-row"><td colspan="${columns.length}">No hay datos que coincidan con los filtros</td></tr>`;
+            html += `<tr class="empty-row"><td colspan="5">No hay datos que coincidan con los filtros</td></tr>`;
         } else {
             for (const rec of pageData) {
                 html += `<tr>`;
-                for (const col of columns) {
-                    let val = rec[col.key] || "";
-                    if (val === "") val = "<span class='badge-pending'>-</span>";
-                    else val = escapeHtml(val);
-                    html += `<td>${val}</td>`;
-                }
+                html += `<td>${escapeHtml(rec.claveProveedor || '')}</td>`;
+                html += `<td>${escapeHtml(rec.nombreProveedor || '')}</td>`;
+                html += `<td>${escapeHtml(rec.tipo || '')}</td>`;
+                html += `<td>${escapeHtml(rec.zona || '')}</td>`;
+                html += `<td>${escapeHtml(rec.responsable || '')}</td>`;
                 html += `</tr>`;
             }
         }
@@ -1406,20 +1987,8 @@
         document.getElementById("reglasPrevPageBtn")?.addEventListener("click", () => { if (reglasCurrentPage > 1) { reglasCurrentPage--; renderReglasCurrentPage(); } });
         document.getElementById("reglasNextPageBtn")?.addEventListener("click", () => { if (reglasCurrentPage < totalPages) { reglasCurrentPage++; renderReglasCurrentPage(); } });
         document.getElementById("reglasLastPageBtn")?.addEventListener("click", () => { reglasCurrentPage = totalPages; renderReglasCurrentPage(); });
-        
-        container.querySelectorAll('.th-content').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const field = el.dataset.field;
-                const label = el.dataset.label;
-                const rect = el.getBoundingClientRect();
-                const currentSelected = reglasCurrentFilters[field] || [];
-                createFilterDropdownCascada(field, label, rect, currentSelected, reglasFilteredData, false);
-            });
-        });
     }
     
-    // ==================== DROPDOWN COMÚN CON MODO CASCADA ====================
     function closeDropdown() {
         if (activeDropdown) {
             activeDropdown.remove();
@@ -1427,7 +1996,7 @@
         }
     }
     
-    function createFilterDropdownCascada(field, label, rect, currentSelected, visibleData, isBaseDatos) {
+    function createFilterDropdown(field, label, rect, currentSelected, visibleData, isBaseDatos) {
         if (activeDropdown) {
             activeDropdown.remove();
             activeDropdown = null;
@@ -1515,11 +2084,17 @@
             }
         };
         
-        // No cerrar al hacer clic fuera del dropdown para permitir múltiples selecciones
-        // El dropdown solo se cierra con el botón Aplicar o si se abre otro dropdown
+        setTimeout(() => {
+            const handleClickOutside = (e) => {
+                if (dropdown && !dropdown.contains(e.target)) {
+                    closeDropdown();
+                    document.removeEventListener('click', handleClickOutside);
+                }
+            };
+            document.addEventListener('click', handleClickOutside);
+        }, 10);
     }
     
-    // ==================== ACTUALIZACIONES ====================
     function updateDashboardStats() {
         const total = filteredData.length;
         const proveedores = new Set(filteredData.map(r => r.claveProveedor)).size;
@@ -1566,21 +2141,14 @@
     }
     
     async function deleteReglasDatabase() {
-        if (confirm("⚠️ ¿Borrar TODAS las reglas? Esto limpiará también TIPO PROCESO, ZONA y RESPONSABLE en Base de Datos")) {
+        if (confirm("⚠️ ¿Borrar TODAS las reglas?")) {
             await deleteAllReglas();
             await loadAllReglas();
-            for (const registro of databaseRecords) {
-                registro.tipoProceso = "";
-                registro.zona = "";
-                registro.responsable = "";
-            }
-            await saveAllRecordsToDB();
-            await loadAllRecords();
             reglasCurrentFilters = {};
             reglasUniqueValuesCache = {};
             await applyReglasFiltersAndRender();
             await applyFiltersAndRender();
-            showFeedback("Reglas eliminadas y campos de Base de Datos limpiados", "success");
+            showFeedback("Reglas eliminadas", "success");
         }
     }
     
@@ -1652,32 +2220,10 @@
             Array.from(btns).find(b => b.dataset.tab === id)?.classList.add('active');
             if (id === 'basedatos') applyFiltersAndRender();
             if (id === 'reglas') applyReglasFiltersAndRender();
+            if (id === 'consolidado') renderizarConsolidado();
         }
         btns.forEach(b => b.onclick = () => activate(b.dataset.tab));
         activate('basedatos');
-    }
-
-    async function init() {
-        await openDB();
-        await loadAllRecords();
-        await openReglasDB();
-        await loadAllReglas();
-        initTabs();
-        initDragAndDrop();
-        applyFilters();
-        renderCurrentPage();
-        applyReglasFilters();
-        renderReglasCurrentPage();
-        updateDashboardStats();
-        document.getElementById('clearFiltersBtn')?.addEventListener('click', clearAllFilters);
-        document.getElementById('deleteDatabaseBtn')?.addEventListener('click', deleteDatabase);
-        document.getElementById('exportDataBtn')?.addEventListener('click', exportToExcel);
-        document.getElementById('clearReglasFiltersBtn')?.addEventListener('click', clearReglasFilters);
-        document.getElementById('deleteReglasDatabaseBtn')?.addEventListener('click', deleteReglasDatabase);
-        document.getElementById('exportReglasBtn')?.addEventListener('click', exportReglasToExcel);
-        
-        inicializarDropdownAnios();  // <--- LÍNEA NUEVA 1
-        inicializarDropdownMeses();  // <--- LÍNEA NUEVA 2
     }
 
     function escapeHtml(str) { 
@@ -1685,750 +2231,753 @@
         return String(str).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); 
     }
 
-// ==================== VARIABLES PARA CONSOLIDADO ====================
-let consolidadoAnioSeleccionado = "todos";
-let consolidadoAniosDisponibles = [];
-let consolidadoAniosSeleccionados = [];
-let consolidadoAniosTempSeleccionados = [];
-let consolidadoMesesDisponibles = [];
-let consolidadoMesesSeleccionados = [];
-let consolidadoMesesTempSeleccionados = [];
+    // ==================== VARIABLES PARA CONSOLIDADO ====================
+    let consolidadoAniosDisponibles = [];
+    let consolidadoAniosSeleccionados = [];
+    let consolidadoAniosTempSeleccionados = [];
+    let consolidadoMesesDisponibles = [];
+    let consolidadoMesesSeleccionados = [];
+    let consolidadoMesesTempSeleccionados = [];
 
-function obtenerMesesUnicos() {
-    const mesesMap = new Map(); // Usamos Map para almacenar el orden original
-    for (const rec of databaseRecords) {
-        if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
-            const fecha = rec.fechaEntrada;
-            const match = fecha.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
-            if (match) {
-                const mesAbrev = match[2].toLowerCase();
-                const año = match[3];
-                const añoCompleto = 2000 + parseInt(año);
-                const meses = {
-                    'ene': 'ENERO', 'feb': 'FEBRERO', 'mar': 'MARZO', 'abr': 'ABRIL',
-                    'may': 'MAYO', 'jun': 'JUNIO', 'jul': 'JULIO', 'ago': 'AGOSTO',
-                    'sep': 'SEPTIEMBRE', 'oct': 'OCTUBRE', 'nov': 'NOVIEMBRE', 'dic': 'DICIEMBRE'
-                };
-                const mesKey = `${meses[mesAbrev]} ${añoCompleto}`;
-                const orden = `${añoCompleto}-${obtenerNumeroMes(meses[mesAbrev])}`;
-                mesesMap.set(mesKey, orden);
-            }
-        }
-    }
-
-    // Ordenar por año y número de mes
-    return Array.from(mesesMap.keys()).sort((a, b) => {
-        const ordenA = mesesMap.get(a);
-        const ordenB = mesesMap.get(b);
-        return ordenA.localeCompare(ordenB);
-    });
-}
-
-// Función auxiliar para obtener el número del mes
-function obtenerNumeroMes(nombreMes) {
-    const meses = {
-        'ENERO': 1, 'FEBRERO': 2, 'MARZO': 3, 'ABRIL': 4,
-        'MAYO': 5, 'JUNIO': 6, 'JULIO': 7, 'AGOSTO': 8,
-        'SEPTIEMBRE': 9, 'OCTUBRE': 10, 'NOVIEMBRE': 11, 'DICIEMBRE': 12
-    };
-    return meses[nombreMes] || 0;
-}
-
-// Nueva función: Obtener años únicos
-function obtenerAniosUnicos() {
-    const aniosSet = new Set();
-    for (const rec of databaseRecords) {
-        if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
-            const match = rec.fechaEntrada.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
-            if (match) {
-                const año = 2000 + parseInt(match[3]);
-                aniosSet.add(año);
-            }
-        }
-    }
-    return Array.from(aniosSet).sort((a, b) => b - a);
-}
-
-// Actualizar el texto del botón de años
-function actualizarTextoBtnAnios() {
-    const btn = document.getElementById("consolidadoAnioDropdownBtn");
-    if (btn) {
-        const total = consolidadoAniosDisponibles.length;
-        const count = consolidadoAniosSeleccionados.length;
-        
-        if (count === 0 || count === total) {
-            btn.innerHTML = `Seleccionar años <span style="font-size: 0.7rem;">▼</span>`;
-        } else {
-            btn.innerHTML = `${count} año${count !== 1 ? 's' : ''} seleccionado${count !== 1 ? 's' : ''} <span style="font-size: 0.7rem;">▼</span>`;
-        }
-    }
-}
-
-// Actualizar el texto del botón de meses
-function actualizarTextoBtnMeses() {
-    const btn = document.getElementById("consolidadoMesesDropdownBtn");
-    if (btn) {
-        const total = consolidadoMesesDisponibles.length;
-        const count = consolidadoMesesSeleccionados.length;
-        
-        if (count === 0 || count === total) {
-            btn.innerHTML = `Seleccionar meses <span style="font-size: 0.7rem;">▼</span>`;
-        } else {
-            btn.innerHTML = `${count} mes${count !== 1 ? 'es' : ''} seleccionado${count !== 1 ? 's' : ''} <span style="font-size: 0.7rem;">▼</span>`;
-        }
-    }
-}
-
-// Actualizar la lista de checkboxes de años
-function actualizarListaAniosDropdown() {
-    const container = document.getElementById("consolidadoAniosCheckboxList");
-    if (!container) return;
-    
-    const anios = obtenerAniosUnicos();
-    consolidadoAniosDisponibles = anios;
-    
-    if (anios.length === 0) {
-        container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay años disponibles</div>';
-        return;
-    }
-    
-    // Filtrar los años seleccionados que estén disponibles
-    consolidadoAniosTempSeleccionados = consolidadoAniosTempSeleccionados.filter(anio => anios.includes(anio));
-    
-    container.innerHTML = anios.map(anio => `
-        <label style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.75rem;">
-            <input type="checkbox" value="${anio}" style="cursor: pointer;" ${consolidadoAniosTempSeleccionados.includes(anio) ? 'checked' : ''}>
-            <span>${anio}</span>
-        </label>
-    `).join('');
-}
-
-// Inicializar dropdown de años
-function inicializarDropdownAnios() {
-    const dropdownBtn = document.getElementById("consolidadoAnioDropdownBtn");
-    const dropdown = document.getElementById("consolidadoAnioDropdown");
-    
-    if (!dropdownBtn || !dropdown) return;
-    
-    // Abrir/cerrar dropdown
-    dropdownBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (dropdown.style.display === "block") {
-            dropdown.style.display = "none";
-        } else {
-            // Sincronizar selección temporal con la actual
-            consolidadoAniosTempSeleccionados = [...consolidadoAniosSeleccionados];
-            actualizarListaAniosDropdown();
-            dropdown.style.display = "block";
-        }
-    });
-    
-    // Cerrar al hacer clic fuera
-    document.addEventListener("click", (e) => {
-        if (dropdown && !dropdown.contains(e.target) && e.target !== dropdownBtn) {
-            dropdown.style.display = "none";
-        }
-    });
-    
-    // Botón Seleccionar todos
-    const selectAllBtn = document.getElementById("consolidadoSelectAllAnios");
-    if (selectAllBtn) {
-        selectAllBtn.addEventListener("click", () => {
-            const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = true);
-        });
-    }
-    
-    // Botón Limpiar todos
-    const clearAllBtn = document.getElementById("consolidadoClearAllAnios");
-    if (clearAllBtn) {
-        clearAllBtn.addEventListener("click", () => {
-            const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = false);
-        });
-    }
-    
-    // Botón Cancelar
-    const cancelarBtn = document.getElementById("consolidadoCancelarAnios");
-    if (cancelarBtn) {
-        cancelarBtn.addEventListener("click", () => {
-            dropdown.style.display = "none";
-        });
-    }
-    
-    // Botón Aceptar
-    const aceptarBtn = document.getElementById("consolidadoAceptarAnios");
-    if (aceptarBtn) {
-        aceptarBtn.addEventListener("click", () => {
-            const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
-            consolidadoAniosSeleccionados = [];
-            checkboxes.forEach(cb => {
-                if (cb.checked) {
-                    consolidadoAniosSeleccionados.push(parseInt(cb.value));
-                }
-            });
-            dropdown.style.display = "none";
-            renderizarConsolidado();
-            actualizarTextoBtnAnios();
-        });
-    }
-}
-
-// Nueva función: Obtener meses disponibles según el año seleccionado
-function obtenerMesesPorAnio(anio) {
-    if (!anio || anio === "todos") {
-        return obtenerMesesUnicos();
-    }
-    
-    const mesesMap = new Map();
-    for (const rec of databaseRecords) {
-        if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
-            const fecha = rec.fechaEntrada;
-            const match = fecha.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
-            if (match) {
-                const mesAbrev = match[2].toLowerCase();
-                const año = 2000 + parseInt(match[3]);
-                if (año === anio) {
+    function obtenerMesesUnicos() {
+        const mesesMap = new Map();
+        for (const rec of databaseRecords) {
+            if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
+                const fecha = rec.fechaEntrada;
+                const match = fecha.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
+                if (match) {
+                    const mesAbrev = match[2].toLowerCase();
+                    const año = match[3];
+                    const añoCompleto = 2000 + parseInt(año);
                     const meses = {
                         'ene': 'ENERO', 'feb': 'FEBRERO', 'mar': 'MARZO', 'abr': 'ABRIL',
                         'may': 'MAYO', 'jun': 'JUNIO', 'jul': 'JULIO', 'ago': 'AGOSTO',
                         'sep': 'SEPTIEMBRE', 'oct': 'OCTUBRE', 'nov': 'NOVIEMBRE', 'dic': 'DICIEMBRE'
                     };
-                    const mesKey = `${meses[mesAbrev]} ${año}`;
-                    const orden = `${año}-${obtenerNumeroMes(meses[mesAbrev])}`;
+                    const mesKey = `${meses[mesAbrev]} ${añoCompleto}`;
+                    const orden = `${añoCompleto}-${obtenerNumeroMes(meses[mesAbrev])}`;
                     mesesMap.set(mesKey, orden);
                 }
             }
         }
+        return Array.from(mesesMap.keys()).sort((a, b) => {
+            const ordenA = mesesMap.get(a);
+            const ordenB = mesesMap.get(b);
+            return ordenA.localeCompare(ordenB);
+        });
     }
-    
-    return Array.from(mesesMap.keys()).sort((a, b) => {
-        const ordenA = mesesMap.get(a);
-        const ordenB = mesesMap.get(b);
-        return ordenA.localeCompare(ordenB);
-    });
-}
 
-// Obtener proveedores elegibles (al menos un registro con Generado AP="SI" y Tipo Proceso="AUTOMÁTICO")
-function obtenerProveedoresElegibles() {
-    const proveedoresSet = new Set();
-    for (const rec of databaseRecords) {
-        const generadoAP = (rec.generadoAP || "").toUpperCase();
-        const tipoProceso = (rec.tipoProceso || "").toUpperCase();
-        if (generadoAP === "SI" && tipoProceso === "AUTOMÁTICO") {
+    function obtenerNumeroMes(nombreMes) {
+        const meses = {
+            'ENERO': 1, 'FEBRERO': 2, 'MARZO': 3, 'ABRIL': 4,
+            'MAYO': 5, 'JUNIO': 6, 'JULIO': 7, 'AGOSTO': 8,
+            'SEPTIEMBRE': 9, 'OCTUBRE': 10, 'NOVIEMBRE': 11, 'DICIEMBRE': 12
+        };
+        return meses[nombreMes] || 0;
+    }
+
+    function obtenerAniosUnicos() {
+        const aniosSet = new Set();
+        for (const rec of databaseRecords) {
+            if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
+                const match = rec.fechaEntrada.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
+                if (match) {
+                    const año = 2000 + parseInt(match[3]);
+                    aniosSet.add(año);
+                }
+            }
+        }
+        return Array.from(aniosSet).sort((a, b) => b - a);
+    }
+
+    function actualizarTextoBtnAnios() {
+        const btn = document.getElementById("consolidadoAnioDropdownBtn");
+        if (btn) {
+            const total = consolidadoAniosDisponibles.length;
+            const count = consolidadoAniosSeleccionados.length;
+            if (count === 0 || count === total) {
+                btn.innerHTML = `Seleccionar años <span style="font-size: 0.7rem;">▼</span>`;
+            } else {
+                btn.innerHTML = `${count} año${count !== 1 ? 's' : ''} seleccionado${count !== 1 ? 's' : ''} <span style="font-size: 0.7rem;">▼</span>`;
+            }
+        }
+    }
+
+    function actualizarTextoBtnMeses() {
+        const btn = document.getElementById("consolidadoMesesDropdownBtn");
+        if (btn) {
+            const total = consolidadoMesesDisponibles.length;
+            const count = consolidadoMesesSeleccionados.length;
+            if (count === 0 || count === total) {
+                btn.innerHTML = `Seleccionar meses <span style="font-size: 0.7rem;">▼</span>`;
+            } else {
+                btn.innerHTML = `${count} mes${count !== 1 ? 'es' : ''} seleccionado${count !== 1 ? 's' : ''} <span style="font-size: 0.7rem;">▼</span>`;
+            }
+        }
+    }
+
+    function actualizarListaAniosDropdown() {
+        const container = document.getElementById("consolidadoAniosCheckboxList");
+        if (!container) return;
+        
+        const anios = obtenerAniosUnicos();
+        consolidadoAniosDisponibles = anios;
+        
+        if (anios.length === 0) {
+            container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay años disponibles</div>';
+            return;
+        }
+        
+        consolidadoAniosTempSeleccionados = consolidadoAniosTempSeleccionados.filter(anio => anios.includes(anio));
+        
+        container.innerHTML = anios.map(anio => `
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.75rem;">
+                <input type="checkbox" value="${anio}" style="cursor: pointer;" ${consolidadoAniosTempSeleccionados.includes(anio) ? 'checked' : ''}>
+                <span>${anio}</span>
+            </label>
+        `).join('');
+    }
+
+    function inicializarDropdownAnios() {
+        const dropdownBtn = document.getElementById("consolidadoAnioDropdownBtn");
+        const dropdown = document.getElementById("consolidadoAnioDropdown");
+        
+        if (!dropdownBtn || !dropdown) return;
+        
+        dropdownBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (dropdown.style.display === "block") {
+                dropdown.style.display = "none";
+            } else {
+                consolidadoAniosTempSeleccionados = [...consolidadoAniosSeleccionados];
+                actualizarListaAniosDropdown();
+                dropdown.style.display = "block";
+            }
+        });
+        
+        document.addEventListener("click", (e) => {
+            if (dropdown && !dropdown.contains(e.target) && e.target !== dropdownBtn) {
+                dropdown.style.display = "none";
+            }
+        });
+        
+        const selectAllBtn = document.getElementById("consolidadoSelectAllAnios");
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener("click", () => {
+                const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = true);
+            });
+        }
+        
+        const clearAllBtn = document.getElementById("consolidadoClearAllAnios");
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener("click", () => {
+                const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+            });
+        }
+        
+        const cancelarBtn = document.getElementById("consolidadoCancelarAnios");
+        if (cancelarBtn) {
+            cancelarBtn.addEventListener("click", () => {
+                dropdown.style.display = "none";
+            });
+        }
+        
+        const aceptarBtn = document.getElementById("consolidadoAceptarAnios");
+        if (aceptarBtn) {
+            aceptarBtn.addEventListener("click", () => {
+                const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
+                consolidadoAniosSeleccionados = [];
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        consolidadoAniosSeleccionados.push(parseInt(cb.value));
+                    }
+                });
+                dropdown.style.display = "none";
+                renderizarConsolidado();
+                actualizarTextoBtnAnios();
+            });
+        }
+    }
+
+    function obtenerMesesPorAnio(anio) {
+        const mesesMap = new Map();
+        for (const rec of databaseRecords) {
+            if (rec.fechaEntrada && rec.tipoProceso && rec.tipoProceso.toUpperCase() === "AUTOMÁTICO") {
+                const fecha = rec.fechaEntrada;
+                const match = fecha.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
+                if (match) {
+                    const mesAbrev = match[2].toLowerCase();
+                    const año = 2000 + parseInt(match[3]);
+                    if (año === anio) {
+                        const meses = {
+                            'ene': 'ENERO', 'feb': 'FEBRERO', 'mar': 'MARZO', 'abr': 'ABRIL',
+                            'may': 'MAYO', 'jun': 'JUNIO', 'jul': 'JULIO', 'ago': 'AGOSTO',
+                            'sep': 'SEPTIEMBRE', 'oct': 'OCTUBRE', 'nov': 'NOVIEMBRE', 'dic': 'DICIEMBRE'
+                        };
+                        const mesKey = `${meses[mesAbrev]} ${año}`;
+                        const orden = `${año}-${obtenerNumeroMes(meses[mesAbrev])}`;
+                        mesesMap.set(mesKey, orden);
+                    }
+                }
+            }
+        }
+        return Array.from(mesesMap.keys()).sort((a, b) => {
+            const ordenA = mesesMap.get(a);
+            const ordenB = mesesMap.get(b);
+            return ordenA.localeCompare(ordenB);
+        });
+    }
+
+    function obtenerProveedoresElegibles() {
+        const proveedoresSet = new Set();
+        for (const rec of databaseRecords) {
             if (rec.nombreProveedor && rec.nombreProveedor.trim()) {
                 proveedoresSet.add(rec.nombreProveedor.trim());
             }
         }
+        return Array.from(proveedoresSet).sort();
     }
-    return Array.from(proveedoresSet).sort();
-}
 
-// Extraer mes de una fecha (formato "dd-mmm-aa" -> "MMM-AA")
-function extraerMesKey(fechaStr) {
-    if (!fechaStr) return null;
-    const match = fechaStr.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
-    if (match) {
-        const mesAbrev = match[2].toLowerCase();
-        const año = match[3];
-        const añoCompleto = 2000 + parseInt(año);
-        const meses = {
-            'ene': 'ENERO', 'feb': 'FEBRERO', 'mar': 'MARZO', 'abr': 'ABRIL',
-            'may': 'MAYO', 'jun': 'JUNIO', 'jul': 'JULIO', 'ago': 'AGOSTO',
-            'sep': 'SEPTIEMBRE', 'oct': 'OCTUBRE', 'nov': 'NOVIEMBRE', 'dic': 'DICIEMBRE'
-        };
-        return `${meses[mesAbrev]} ${añoCompleto}`;
-    }
-    return null;
-}
-
-// Calcular datos consolidados por proveedor y mes
-function calcularConsolidado() {
-    const proveedores = obtenerProveedoresElegibles();
-    const meses = obtenerMesesUnicos();
-    
-    // Inicializar estructura de datos
-    const datos = {};
-    for (const proveedor of proveedores) {
-        datos[proveedor] = {};
-        for (const mes of meses) {
-            datos[proveedor][mes] = {
-                totales: 0,
-                empatadas: 0
-            };
-        }
-    }
-    
-    // Recorrer todos los registros que cumplan Tipo Proceso = "AUTOMÁTICO"
-    for (const rec of databaseRecords) {
-        const tipoProceso = (rec.tipoProceso || "").toUpperCase();
-        if (tipoProceso !== "AUTOMÁTICO") continue;
-        
-        const proveedor = rec.nombreProveedor?.trim();
-        if (!proveedor || !datos[proveedor]) continue;
-        
-        const mesKey = extraerMesKey(rec.fechaEntrada);
-        if (!mesKey || !datos[proveedor][mesKey]) continue;
-        
-        // ENTRADAS TOTALES: todos los registros (SI o NO)
-        datos[proveedor][mesKey].totales++;
-        
-        // ENTRADAS EMPATADAS: solo Generado AP = "SI"
-        const generadoAP = (rec.generadoAP || "").toUpperCase();
-        if (generadoAP === "SI") {
-            datos[proveedor][mesKey].empatadas++;
-        }
-    }
-    
-    return { datos, meses, proveedores };
-}
-
-// Calcular resumen general por mes
-function calcularResumenGeneral() {
-    // Obtener meses disponibles según años seleccionados
-    let mesesDisponibles = [];
-    if (consolidadoAniosSeleccionados.length > 0) {
-        for (const anio of consolidadoAniosSeleccionados) {
-            const mesesDelAnio = obtenerMesesPorAnio(anio);
-            mesesDisponibles.push(...mesesDelAnio);
-        }
-    } else {
-        mesesDisponibles = obtenerMesesUnicos();
-    }
-    
-    // Eliminar duplicados y ordenar meses
-    const mesesSet = new Map();
-    for (const mes of mesesDisponibles) {
-        const match = mes.match(/(\w+)\s+(\d{4})/);
+    function extraerMesKey(fechaStr) {
+        if (!fechaStr) return null;
+        const match = fechaStr.match(/^(\d{1,2})-([a-z]{3})-(\d{2})$/i);
         if (match) {
-            const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
-            mesesSet.set(mes, orden);
+            const mesAbrev = match[2].toLowerCase();
+            const año = match[3];
+            const añoCompleto = 2000 + parseInt(año);
+            const meses = {
+                'ene': 'ENERO', 'feb': 'FEBRERO', 'mar': 'MARZO', 'abr': 'ABRIL',
+                'may': 'MAYO', 'jun': 'JUNIO', 'jul': 'JULIO', 'ago': 'AGOSTO',
+                'sep': 'SEPTIEMBRE', 'oct': 'OCTUBRE', 'nov': 'NOVIEMBRE', 'dic': 'DICIEMBRE'
+            };
+            return `${meses[mesAbrev]} ${añoCompleto}`;
         }
+        return null;
     }
-    const mesesOrdenados = Array.from(mesesSet.keys()).sort((a, b) => {
-        return mesesSet.get(a).localeCompare(mesesSet.get(b));
-    });
-    
-    // Filtrar por meses seleccionados en el filtro
-    const mesesMostrar = mesesOrdenados.filter(m => consolidadoMesesSeleccionados.includes(m));
-    
-    // Inicializar acumuladores
-    let acumuladoTotales = 0;
-    let acumuladoAutomaticas = 0;
-    
-    const resultados = {};
-    
-    for (const mes of mesesMostrar) {
-        // Extraer año del mes (formato "ENERO 2026")
-        const match = mes.match(/(\w+)\s+(\d{4})/);
-        const mesNombre = match[1];
-        const anio = parseInt(match[2]);
+
+    function calcularConsolidado() {
+        const proveedores = obtenerProveedoresElegibles();
+        const meses = obtenerMesesUnicos();
         
-        // Calcular totales y automáticas para este mes
-        let totalesMes = 0;
-        let automaticasMes = 0;
+        const datos = {};
+        for (const proveedor of proveedores) {
+            datos[proveedor] = {};
+            for (const mes of meses) {
+                datos[proveedor][mes] = {
+                    totales: 0,
+                    empatadas: 0
+                };
+            }
+        }
         
         for (const rec of databaseRecords) {
-            const tipoProceso = (rec.tipoProceso || "").toUpperCase();
-            if (tipoProceso !== "AUTOMÁTICO") continue;
+            const proveedor = rec.nombreProveedor?.trim();
+            if (!proveedor || !datos[proveedor]) continue;
             
             const mesKey = extraerMesKey(rec.fechaEntrada);
-            if (mesKey === mes) {
-                totalesMes++;
-                const generadoAP = (rec.generadoAP || "").toUpperCase();
-                if (generadoAP === "SI") {
-                    automaticasMes++;
+            if (!mesKey || !datos[proveedor][mesKey]) continue;
+            
+            datos[proveedor][mesKey].totales++;
+            
+            const generadoAP = (rec.generadoAP || "").toUpperCase();
+            if (generadoAP === "SI") {
+                datos[proveedor][mesKey].empatadas++;
+            }
+        }
+        
+        return { datos, meses, proveedores };
+    }
+
+    function calcularResumenGeneral() {
+        let mesesDisponibles = [];
+        if (consolidadoAniosSeleccionados.length > 0) {
+            for (const anio of consolidadoAniosSeleccionados) {
+                const mesesDelAnio = obtenerMesesPorAnio(anio);
+                mesesDisponibles.push(...mesesDelAnio);
+            }
+        } else {
+            mesesDisponibles = obtenerMesesUnicos();
+        }
+        
+        const mesesSet = new Map();
+        for (const mes of mesesDisponibles) {
+            const match = mes.match(/(\w+)\s+(\d{4})/);
+            if (match) {
+                const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
+                mesesSet.set(mes, orden);
+            }
+        }
+        const mesesOrdenados = Array.from(mesesSet.keys()).sort((a, b) => {
+            return mesesSet.get(a).localeCompare(mesesSet.get(b));
+        });
+        
+        const mesesMostrar = mesesOrdenados.filter(m => consolidadoMesesSeleccionados.includes(m));
+        
+        let acumuladoTotales = 0;
+        let acumuladoAutomaticas = 0;
+        
+        const resultados = {};
+        
+        for (const mes of mesesMostrar) {
+            const match = mes.match(/(\w+)\s+(\d{4})/);
+            const anio = parseInt(match[2]);
+            
+            let totalesMes = 0;
+            let automaticasMes = 0;
+            
+            for (const rec of databaseRecords) {
+                const mesKey = extraerMesKey(rec.fechaEntrada);
+                if (mesKey === mes) {
+                    totalesMes++;
+                    const generadoAP = (rec.generadoAP || "").toUpperCase();
+                    if (generadoAP === "SI") {
+                        automaticasMes++;
+                    }
                 }
             }
+            
+            const ersSinXml = totalesMes - automaticasMes;
+            const porcentajeErs = totalesMes > 0 ? (ersSinXml / totalesMes) * 100 : 0;
+            const efectividad = totalesMes > 0 ? (automaticasMes / totalesMes) * 100 : 0;
+            
+            resultados[mes] = {
+                totales: totalesMes,
+                automaticas: automaticasMes,
+                ersSinXml: ersSinXml,
+                porcentajeErs: porcentajeErs,
+                efectividad: efectividad,
+                anio: anio
+            };
+            
+            acumuladoTotales += totalesMes;
+            acumuladoAutomaticas += automaticasMes;
         }
         
-        const ersSinXml = totalesMes - automaticasMes;
-        const porcentajeErs = totalesMes > 0 ? (ersSinXml / totalesMes) * 100 : 0;
-        const efectividad = totalesMes > 0 ? (automaticasMes / totalesMes) * 100 : 0;
+        const acumuladoErsSinXml = acumuladoTotales - acumuladoAutomaticas;
+        const acumuladoPorcentajeErs = acumuladoTotales > 0 ? (acumuladoErsSinXml / acumuladoTotales) * 100 : 0;
+        const acumuladoEfectividad = acumuladoTotales > 0 ? (acumuladoAutomaticas / acumuladoTotales) * 100 : 0;
         
-        resultados[mes] = {
-            totales: totalesMes,
-            automaticas: automaticasMes,
-            ersSinXml: ersSinXml,
-            porcentajeErs: porcentajeErs,
-            efectividad: efectividad,
-            anio: anio
+        return {
+            meses: mesesMostrar,
+            datos: resultados,
+            acumulado: {
+                totales: acumuladoTotales,
+                automaticas: acumuladoAutomaticas,
+                ersSinXml: acumuladoErsSinXml,
+                porcentajeErs: acumuladoPorcentajeErs,
+                efectividad: acumuladoEfectividad
+            }
         };
+    }
+
+    function renderizarResumenGeneral() {
+        const container = document.getElementById("resumen-general-wrapper");
+        if (!container) return;
         
-        // Acumular para el total del año
-        acumuladoTotales += totalesMes;
-        acumuladoAutomaticas += automaticasMes;
-    }
-    
-    const acumuladoErsSinXml = acumuladoTotales - acumuladoAutomaticas;
-    const acumuladoPorcentajeErs = acumuladoTotales > 0 ? (acumuladoErsSinXml / acumuladoTotales) * 100 : 0;
-    const acumuladoEfectividad = acumuladoTotales > 0 ? (acumuladoAutomaticas / acumuladoTotales) * 100 : 0;
-    
-    return {
-        meses: mesesMostrar,
-        datos: resultados,
-        acumulado: {
-            totales: acumuladoTotales,
-            automaticas: acumuladoAutomaticas,
-            ersSinXml: acumuladoErsSinXml,
-            porcentajeErs: acumuladoPorcentajeErs,
-            efectividad: acumuladoEfectividad
+        if (databaseRecords.length === 0) {
+            container.innerHTML = '<div class="loading">No hay datos cargados</div>';
+            return;
         }
-    };
-}
-
-// Renderizar tabla resumen general
-function renderizarResumenGeneral() {
-    const container = document.getElementById("resumen-general-wrapper");
-    if (!container) return;
-    
-    if (databaseRecords.length === 0) {
-        container.innerHTML = '<div class="loading">No hay datos cargados</div>';
-        return;
-    }
-    
-    const resumen = calcularResumenGeneral();
-    
-    if (resumen.meses.length === 0) {
-        container.innerHTML = '<div class="loading">No hay datos para los filtros seleccionados</div>';
-        return;
-    }
-    
-    // Determinar si mostrar el acumulado (solo si hay más de 1 mes)
-    const mostrarAcumulado = resumen.meses.length > 1;
-    
-    // Construir la tabla
-    let html = '<table style="min-width: 600px;">';
-    html += '<thead>';
-    
-    // Primera fila: Concepto + Meses + ACUMULADO (solo si hay más de 1 mes)
-    html += '<tr>';
-    html += '<th rowspan="2" style="background:#0A2540; color:white;">CONCEPTO</th>';
-    for (const mes of resumen.meses) {
-        const mesCompleto = mes;
-        html += `<th colspan="2" style="text-align:center; background:#0A2540; color:white;">${mesCompleto}</th>`;
-    }
-    if (mostrarAcumulado) {
-        html += `<th colspan="2" style="text-align:center; background:#0A2540; color:white;">ACUMULADO ${resumen.meses.length > 0 ? resumen.datos[resumen.meses[0]].anio : '2026'}</th>`;
-    }
-    html += '</tr>';
-    
-    // Segunda fila: subtítulos
-    html += '<tr>';
-    for (let i = 0; i < resumen.meses.length; i++) {
-        html += '<th style="background:#f1f5f9;">TOTALES</th>';
-        html += '<th style="background:#f1f5f9;">ERS SIN XML</th>';
-    }
-    if (mostrarAcumulado) {
-        html += '<th style="background:#f1f5f9;">TOTALES</th>';
-        html += '<th style="background:#f1f5f9;">ERS SIN XML</th>';
-    }
-    html += '</tr>';
-    html += '</thead>';
-    
-    html += '<tbody>';
-    
-    // Fila 1: Entradas Totales
-    html += '<tr>';
-    html += '<td style="font-weight:600; background:#f8fafc;">Entradas Totales</td>';
-    for (const mes of resumen.meses) {
-        html += `<td style="text-align:right;">${resumen.datos[mes].totales.toLocaleString()}</td>`;
-        html += `<td style="text-align:right; color:#b91c1c; font-weight:500;">${resumen.datos[mes].ersSinXml.toLocaleString()}</td>`;
-    }
-    if (mostrarAcumulado) {
-        html += `<td style="text-align:right; font-weight:600; background:#e6f7ec;">${resumen.acumulado.totales.toLocaleString()}</td>`;
-        html += `<td style="text-align:right; font-weight:600; color:#b91c1c; background:#fee2e2;">${resumen.acumulado.ersSinXml.toLocaleString()}</td>`;
-    }
-    html += '</tr>';
-    
-    // Fila 2: Entradas automáticas
-    html += '<tr>';
-    html += '<td style="font-weight:600; background:#f8fafc;">Entradas automáticas</td>';
-    for (const mes of resumen.meses) {
-        const porcentajeErs = resumen.datos[mes].porcentajeErs;
-        let colorErs = '#15803d';
-        if (porcentajeErs > 45) colorErs = '#b91c1c';
-        else if (porcentajeErs > 25) colorErs = '#e67e22';
-        html += `<td style="text-align:right;">${resumen.datos[mes].automaticas.toLocaleString()}</td>`;
-        html += `<td style="text-align:right; color:${colorErs}; font-weight:500;">${porcentajeErs.toFixed(2)}%</td>`;
-    }
-    if (mostrarAcumulado) {
-        const acumuladoColor = resumen.acumulado.porcentajeErs > 45 ? '#b91c1c' : (resumen.acumulado.porcentajeErs > 25 ? '#e67e22' : '#15803d');
-        html += `<td style="text-align:right; font-weight:600; background:#e6f7ec;">${resumen.acumulado.automaticas.toLocaleString()}</td>`;
-        html += `<td style="text-align:right; font-weight:600; color:${acumuladoColor}; background:#fff3e0;">${resumen.acumulado.porcentajeErs.toFixed(2)}%</td>`;
-    }
-    html += '</tr>';
-    
-    // Fila 3: % Efectividad
-    html += '<tr>';
-    html += '<td style="font-weight:600; background:#f8fafc;">% Efectividad</td>';
-    for (const mes of resumen.meses) {
-        const efectividad = resumen.datos[mes].efectividad;
-        let colorEfect = '#15803d';
-        if (efectividad < 55) colorEfect = '#b91c1c';
-        else if (efectividad < 75) colorEfect = '#e67e22';
-        html += `<td style="text-align:center; color:${colorEfect}; font-weight:500;" colspan="2">${efectividad.toFixed(2)}%<\/td>`;
-    }
-    if (mostrarAcumulado) {
-        const acumuladoColorEfect = resumen.acumulado.efectividad < 55 ? '#b91c1c' : (resumen.acumulado.efectividad < 75 ? '#e67e22' : '#15803d');
-        html += `<td style="text-align:center; font-weight:600; color:${acumuladoColorEfect}; background:#e6f7ec;" colspan="2">${resumen.acumulado.efectividad.toFixed(2)}%<\/td>`;
-    }
-    html += '</table>';
-    
-    html += '</tbody>';
-    html += '</table>';
-    
-    container.innerHTML = html;
-}
-
-// Actualizar la lista de checkboxes en el dropdown
-function actualizarListaMesesDropdown() {
-    const container = document.getElementById("consolidadoMesesCheckboxList");
-    if (!container) return;
-    
-    // Obtener todos los meses de los años seleccionados
-    let todosMeses = [];
-    if (consolidadoAniosSeleccionados.length > 0) {
-        for (const anio of consolidadoAniosSeleccionados) {
-            const mesesDelAnio = obtenerMesesPorAnio(anio);
-            todosMeses.push(...mesesDelAnio);
+        
+        const resumen = calcularResumenGeneral();
+        
+        if (resumen.meses.length === 0) {
+            container.innerHTML = '<div class="loading">No hay datos para los filtros seleccionados</div>';
+            return;
         }
-    } else {
-        todosMeses = obtenerMesesUnicos();
-    }
-    
-    // Eliminar duplicados y ordenar
-    const mesesSet = new Map();
-    for (const mes of todosMeses) {
-        const match = mes.match(/(\w+)\s+(\d{4})/);
-        if (match) {
-            const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
-            mesesSet.set(mes, orden);
-        }
-    }
-    const meses = Array.from(mesesSet.keys()).sort((a, b) => {
-        return mesesSet.get(a).localeCompare(mesesSet.get(b));
-    });
-    
-    consolidadoMesesDisponibles = meses;
-    
-    if (meses.length === 0) {
-        container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay meses disponibles para los años seleccionados</div>';
-        return;
-    }
-    
-    // Filtrar los meses seleccionados que estén disponibles
-    consolidadoMesesTempSeleccionados = consolidadoMesesTempSeleccionados.filter(mes => meses.includes(mes));
-    
-    container.innerHTML = meses.map(mes => `
-        <label style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.75rem;">
-            <input type="checkbox" value="${mes}" style="cursor: pointer;" ${consolidadoMesesTempSeleccionados.includes(mes) ? 'checked' : ''}>
-            <span>${mes}</span>
-        </label>
-    `).join('');
-}
-
-function renderizarConsolidado() {
-    const container = document.getElementById("consolidado-tabla-wrapper");
-    if (!container) return;
-    
-    if (databaseRecords.length === 0) {
-        container.innerHTML = '<div class="loading">No hay datos cargados en Base de Datos</div>';
-        return;
-    }
-    
-    // INICIALIZAR años seleccionados si está vacío
-    if (consolidadoAniosSeleccionados.length === 0) {
-        consolidadoAniosSeleccionados = obtenerAniosUnicos();
-    }
-    
-    actualizarTextoBtnAnios();
-    actualizarTextoBtnMeses();
-
-    // Obtener todos los meses de los años seleccionados
-    let todosMeses = [];
-    if (consolidadoAniosSeleccionados.length > 0) {
-        for (const anio of consolidadoAniosSeleccionados) {
-            const mesesDelAnio = obtenerMesesPorAnio(anio);
-            todosMeses.push(...mesesDelAnio);
-        }
-    } else {
-        todosMeses = obtenerMesesUnicos();
-    }
-    
-    // Eliminar duplicados y ordenar meses
-    const mesesSet = new Map();
-    for (const mes of todosMeses) {
-        const match = mes.match(/(\w+)\s+(\d{4})/);
-        if (match) {
-            const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
-            mesesSet.set(mes, orden);
-        }
-    }
-    const mesesUnicos = Array.from(mesesSet.keys()).sort((a, b) => {
-        return mesesSet.get(a).localeCompare(mesesSet.get(b));
-    });
-    
-    // Actualizar meses disponibles y seleccionados
-    consolidadoMesesDisponibles = mesesUnicos;
-    
-    if (consolidadoMesesSeleccionados.length === 0 || 
-        !consolidadoMesesSeleccionados.some(m => consolidadoMesesDisponibles.includes(m))) {
-        consolidadoMesesSeleccionados = [...consolidadoMesesDisponibles];
-    }
-    consolidadoMesesTempSeleccionados = [...consolidadoMesesSeleccionados];
-    
-    // Actualizar la lista de checkboxes de meses
-    actualizarListaMesesDropdown();
-    
-    // Filtrar meses a mostrar en la tabla
-    const mesesMostrar = mesesUnicos.filter(m => consolidadoMesesSeleccionados.includes(m));
-    
-    const { datos, proveedores } = calcularConsolidado();
-    
-    if (proveedores.length === 0) {
-        container.innerHTML = '<div class="loading">No hay proveedores que cumplan los criterios (Generado AP=SI y Tipo Proceso=AUTOMÁTICO)</div>';
-        return;
-    }
-    
-    // CONSTRUCCIÓN DE LA TABLA
-    let html = '<table class="consolidado-tabla">';
-    
-    // PRIMERA FILA: NOMBRE PROVEEDOR + MESES (con colspan=4)
-    html += '<thead>';
-    html += '<tr>';
-    html += '<th rowspan="2">NOMBRE PROVEEDOR</th>';
-    for (const mes of mesesMostrar) {
-        html += `<th colspan="4">${mes}</th>`;
-    }
-    html += '</tr>';
-    
-    // SEGUNDA FILA: SUBCOLUMNAS para cada mes
-    html += '<tr>';
-    for (let i = 0; i < mesesMostrar.length; i++) {
-        html += '<th>ENTRADAS TOTALES</th>';
-        html += '<th>ENTRADAS EMPATADAS</th>';
-        html += '<th>ERS SIN XML</th>';
-        html += '<th>% NO EMPATADO</th>';
-    }
-    html += '</tr>';
-    html += '</thead>';
-    
-    // CUERPO DE LA TABLA
-    html += '<tbody>';
-    for (const proveedor of proveedores) {
+        
+        const mostrarAcumulado = resumen.meses.length > 1;
+        
+        let html = '<table style="min-width: 600px;">';
+        html += '<thead>';
+        
         html += '<tr>';
-        html += `<td style="text-align:left; font-weight:500;">${escapeHtml(proveedor)}</td>`;
-        for (const mes of mesesMostrar) {
-            const data = datos[proveedor][mes] || { totales: 0, empatadas: 0 };
-            const totales = data.totales;
-            const empatadas = data.empatadas;
-            const ersSinXml = totales - empatadas;
-            let porcentaje = 0;
-            if (totales > 0) {
-                porcentaje = (ersSinXml / totales) * 100;
-            }
-            const porcentajeFormateado = porcentaje.toFixed(2) + '%';
-            
-            let porcentajeStyle = '';
-            if (porcentaje > 45) {
-                porcentajeStyle = 'style="background:#fee2e2; color:#b91c1c; font-weight:bold;"';
-            } else if (porcentaje > 25) {
-                porcentajeStyle = 'style="background:#fff3e0; color:#e67e22; font-weight:bold;"';
-            } else {
-                porcentajeStyle = 'style="background:#e6f7ec; color:#15803d; font-weight:bold;"';
-            }
-            
-            html += `<td>${totales}</td>`;
-            html += `<td>${empatadas}</td>`;
-            html += `<td>${ersSinXml}</td>`;
-            html += `<td ${porcentajeStyle}>${porcentajeFormateado}</td>`;
+        html += '<th rowspan="2" style="background:#0A2540; color:white;">CONCEPTO</th>';
+        for (const mes of resumen.meses) {
+            html += `<th colspan="2" style="text-align:center; background:#0A2540; color:white;">${mes}</th>`;
+        }
+        if (mostrarAcumulado) {
+            html += `<th colspan="2" style="text-align:center; background:#0A2540; color:white;">ACUMULADO ${resumen.meses.length > 0 ? resumen.datos[resumen.meses[0]].anio : '2026'}</th>`;
         }
         html += '</tr>';
+        
+        html += '<tr>';
+        for (let i = 0; i < resumen.meses.length; i++) {
+            html += '<th style="background:#f1f5f9;">TOTALES</th>';
+            html += '<th style="background:#f1f5f9;">ERS SIN XML</th>';
+        }
+        if (mostrarAcumulado) {
+            html += '<th style="background:#f1f5f9;">TOTALES</th>';
+            html += '<th style="background:#f1f5f9;">ERS SIN XML</th>';
+        }
+        html += '</tr>';
+        html += '</thead>';
+        
+        html += '<tbody>';
+        
+        html += '<tr>';
+        html += '<td style="font-weight:600; background:#f8fafc;">Entradas Totales</td>';
+        for (const mes of resumen.meses) {
+            html += `<td style="text-align:right;">${resumen.datos[mes].totales.toLocaleString()}</td>`;
+            html += `<td style="text-align:right; color:#b91c1c; font-weight:500;">${resumen.datos[mes].ersSinXml.toLocaleString()}</td>`;
+        }
+        if (mostrarAcumulado) {
+            html += `<td style="text-align:right; font-weight:600; background:#e6f7ec;">${resumen.acumulado.totales.toLocaleString()}</td>`;
+            html += `<td style="text-align:right; font-weight:600; color:#b91c1c; background:#fee2e2;">${resumen.acumulado.ersSinXml.toLocaleString()}</td>`;
+        }
+        html += '</tr>';
+        
+        html += '<tr>';
+        html += '<td style="font-weight:600; background:#f8fafc;">Entradas automáticas</td>';
+        for (const mes of resumen.meses) {
+            const porcentajeErs = resumen.datos[mes].porcentajeErs;
+            let colorErs = '#15803d';
+            if (porcentajeErs > 45) colorErs = '#b91c1c';
+            else if (porcentajeErs > 25) colorErs = '#e67e22';
+            html += `<td style="text-align:right;">${resumen.datos[mes].automaticas.toLocaleString()}</td>`;
+            html += `<td style="text-align:right; color:${colorErs}; font-weight:500;">${porcentajeErs.toFixed(2)}%</td>`;
+        }
+        if (mostrarAcumulado) {
+            const acumuladoColor = resumen.acumulado.porcentajeErs > 45 ? '#b91c1c' : (resumen.acumulado.porcentajeErs > 25 ? '#e67e22' : '#15803d');
+            html += `<td style="text-align:right; font-weight:600; background:#e6f7ec;">${resumen.acumulado.automaticas.toLocaleString()}</td>`;
+            html += `<td style="text-align:right; font-weight:600; color:${acumuladoColor}; background:#fff3e0;">${resumen.acumulado.porcentajeErs.toFixed(2)}%</td>`;
+        }
+        html += '</tr>';
+        
+        html += '<tr>';
+        html += '<td style="font-weight:600; background:#f8fafc;">% Efectividad</td>';
+        for (const mes of resumen.meses) {
+            const efectividad = resumen.datos[mes].efectividad;
+            let colorEfect = '#15803d';
+            if (efectividad < 55) colorEfect = '#b91c1c';
+            else if (efectividad < 75) colorEfect = '#e67e22';
+            html += `<td style="text-align:center; color:${colorEfect}; font-weight:500;" colspan="2">${efectividad.toFixed(2)}%<\/td>`;
+        }
+        if (mostrarAcumulado) {
+            const acumuladoColorEfect = resumen.acumulado.efectividad < 55 ? '#b91c1c' : (resumen.acumulado.efectividad < 75 ? '#e67e22' : '#15803d');
+            html += `<td style="text-align:center; font-weight:600; color:${acumuladoColorEfect}; background:#e6f7ec;" colspan="2">${resumen.acumulado.efectividad.toFixed(2)}%<\/td>`;
+        }
+        html += '</tr>';
+        
+        html += '</tbody>';
+        html += '</table>';
+        
+        container.innerHTML = html;
     }
-    html += '</tbody>';
-    html += '</table>';
-    
-    if (mesesMostrar.length === 0) {
-        html = '<div class="loading">No hay meses seleccionados. Selecciona al menos un mes en el filtro.</div>';
-    }
-    
-    renderizarResumenGeneral();
 
-    container.innerHTML = html;
-}
-
-// Inicializar eventos del dropdown de meses
-function inicializarDropdownMeses() {
-    const dropdownBtn = document.getElementById("consolidadoMesesDropdownBtn");
-    const dropdown = document.getElementById("consolidadoMesesDropdown");
-    
-    if (!dropdownBtn || !dropdown) return;
-    
-    // Abrir/cerrar dropdown
-    dropdownBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (dropdown.style.display === "block") {
-            dropdown.style.display = "none";
+    function actualizarListaMesesDropdown() {
+        const container = document.getElementById("consolidadoMesesCheckboxList");
+        if (!container) return;
+        
+        let todosMeses = [];
+        if (consolidadoAniosSeleccionados.length > 0) {
+            for (const anio of consolidadoAniosSeleccionados) {
+                const mesesDelAnio = obtenerMesesPorAnio(anio);
+                todosMeses.push(...mesesDelAnio);
+            }
         } else {
-            // Sincronizar selección temporal con la actual
-            consolidadoMesesTempSeleccionados = [...consolidadoMesesSeleccionados];
-            actualizarListaMesesDropdown();
-            dropdown.style.display = "block";
+            todosMeses = obtenerMesesUnicos();
         }
-    });
-    
-    // Cerrar al hacer clic fuera
-    document.addEventListener("click", (e) => {
-        if (dropdown && !dropdown.contains(e.target) && e.target !== dropdownBtn) {
-            dropdown.style.display = "none";
+        
+        const mesesSet = new Map();
+        for (const mes of todosMeses) {
+            const match = mes.match(/(\w+)\s+(\d{4})/);
+            if (match) {
+                const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
+                mesesSet.set(mes, orden);
+            }
         }
-    });
-    
-    // Botón Seleccionar todos
-    const selectAllBtn = document.getElementById("consolidadoSelectAllMeses");
-    if (selectAllBtn) {
-        selectAllBtn.addEventListener("click", () => {
-            const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = true);
+        const meses = Array.from(mesesSet.keys()).sort((a, b) => {
+            return mesesSet.get(a).localeCompare(mesesSet.get(b));
         });
+        
+        consolidadoMesesDisponibles = meses;
+        
+        if (meses.length === 0) {
+            container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay meses disponibles para los años seleccionados</div>';
+            return;
+        }
+        
+        consolidadoMesesTempSeleccionados = consolidadoMesesTempSeleccionados.filter(mes => meses.includes(mes));
+        
+        container.innerHTML = meses.map(mes => `
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.75rem;">
+                <input type="checkbox" value="${mes}" style="cursor: pointer;" ${consolidadoMesesTempSeleccionados.includes(mes) ? 'checked' : ''}>
+                <span>${mes}</span>
+            </label>
+        `).join('');
     }
-    
-    // Botón Limpiar todos
-    const clearAllBtn = document.getElementById("consolidadoClearAllMeses");
-    if (clearAllBtn) {
-        clearAllBtn.addEventListener("click", () => {
-            const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = false);
-        });
-    }
-    
-    // Botón Cancelar
-    const cancelarBtn = document.getElementById("consolidadoCancelarMeses");
-    if (cancelarBtn) {
-        cancelarBtn.addEventListener("click", () => {
-            dropdown.style.display = "none";
-        });
-    }
-    
-    // Botón Aceptar
-    const aceptarBtn = document.getElementById("consolidadoAceptarMeses");
-    if (aceptarBtn) {
-        aceptarBtn.addEventListener("click", () => {
-            const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
-            consolidadoMesesSeleccionados = [];
-            checkboxes.forEach(cb => {
-                if (cb.checked) {
-                    consolidadoMesesSeleccionados.push(cb.value);
-                }
-            });
-            dropdown.style.display = "none";
-            renderizarConsolidado();
+
+    function renderizarConsolidado() {
+        const container = document.getElementById("consolidado-tabla-wrapper");
+        const resumenContainer = document.getElementById("resumen-general-wrapper");
+        
+        if (!container) return;
+        
+        if (databaseRecords.length === 0) {
+            container.innerHTML = '<div class="loading">No hay datos cargados en Base de Datos</div>';
+            if (resumenContainer) {
+                resumenContainer.innerHTML = '<div class="loading">No hay datos cargados</div>';
+            }
+            actualizarTextoBtnAnios();
             actualizarTextoBtnMeses();
+            return;
+        }
+        
+        if (consolidadoAniosSeleccionados.length === 0) {
+            consolidadoAniosSeleccionados = obtenerAniosUnicos();
+        }
+        
+        actualizarTextoBtnAnios();
+        actualizarTextoBtnMeses();
+        
+        let todosMeses = [];
+        if (consolidadoAniosSeleccionados.length > 0) {
+            for (const anio of consolidadoAniosSeleccionados) {
+                const mesesDelAnio = obtenerMesesPorAnio(anio);
+                todosMeses.push(...mesesDelAnio);
+            }
+        } else {
+            todosMeses = obtenerMesesUnicos();
+        }
+        
+        const mesesSet = new Map();
+        for (const mes of todosMeses) {
+            const match = mes.match(/(\w+)\s+(\d{4})/);
+            if (match) {
+                const orden = `${match[2]}-${obtenerNumeroMes(match[1])}`;
+                mesesSet.set(mes, orden);
+            }
+        }
+        const mesesUnicos = Array.from(mesesSet.keys()).sort((a, b) => {
+            return mesesSet.get(a).localeCompare(mesesSet.get(b));
         });
+        
+        consolidadoMesesDisponibles = mesesUnicos;
+        
+        if (consolidadoMesesSeleccionados.length === 0 || 
+            !consolidadoMesesSeleccionados.some(m => consolidadoMesesDisponibles.includes(m))) {
+            consolidadoMesesSeleccionados = [...consolidadoMesesDisponibles];
+        }
+        consolidadoMesesTempSeleccionados = [...consolidadoMesesSeleccionados];
+        
+        actualizarListaMesesDropdown();
+        
+        const mesesMostrar = mesesUnicos.filter(m => consolidadoMesesSeleccionados.includes(m));
+        
+        const { datos, proveedores } = calcularConsolidado();
+        
+        if (proveedores.length === 0) {
+            container.innerHTML = '<div class="loading">No hay proveedores con datos</div>';
+            return;
+        }
+        
+        let html = '<table class="consolidado-tabla">';
+        
+        html += '<thead>';
+        html += '<tr>';
+        html += '<th rowspan="2">NOMBRE PROVEEDOR</th>';
+        for (const mes of mesesMostrar) {
+            html += `<th colspan="4">${mes}</th>`;
+        }
+        html += '</tr>';
+        
+        html += '<tr>';
+        for (let i = 0; i < mesesMostrar.length; i++) {
+            html += '<th>ENTRADAS TOTALES</th>';
+            html += '<th>ENTRADAS EMPATADAS</th>';
+            html += '<th>ERS SIN XML</th>';
+            html += '<th>% NO EMPATADO</th>';
+        }
+        html += '</tr>';
+        html += '</thead>';
+        
+        html += '<tbody>';
+        for (const proveedor of proveedores) {
+            html += '<tr>';
+            html += `<td style="text-align:left; font-weight:500;">${escapeHtml(proveedor)}<\/td>`;
+            for (const mes of mesesMostrar) {
+                const data = datos[proveedor][mes] || { totales: 0, empatadas: 0 };
+                const totales = data.totales;
+                const empatadas = data.empatadas;
+                const ersSinXml = totales - empatadas;
+                let porcentaje = 0;
+                if (totales > 0) {
+                    porcentaje = (ersSinXml / totales) * 100;
+                }
+                const porcentajeFormateado = porcentaje.toFixed(2) + '%';
+                
+                let porcentajeStyle = '';
+                if (porcentaje > 45) {
+                    porcentajeStyle = 'style="background:#fee2e2; color:#b91c1c; font-weight:bold;"';
+                } else if (porcentaje > 25) {
+                    porcentajeStyle = 'style="background:#fff3e0; color:#e67e22; font-weight:bold;"';
+                } else {
+                    porcentajeStyle = 'style="background:#e6f7ec; color:#15803d; font-weight:bold;"';
+                }
+                
+                html += `<td>${totales}</td>`;
+                html += `<td>${empatadas}</td>`;
+                html += `<td>${ersSinXml}</td>`;
+                html += `<td ${porcentajeStyle}>${porcentajeFormateado}</td>`;
+            }
+            html += '</tr>';
+        }
+        html += '</tbody>';
+        html += '</table>';
+        
+        if (mesesMostrar.length === 0) {
+            html = '<div class="loading">No hay meses seleccionados. Selecciona al menos un mes en el filtro.</div>';
+        }
+        
+        renderizarResumenGeneral();
+        
+        container.innerHTML = html;
     }
-}
+
+    function inicializarDropdownMeses() {
+        const dropdownBtn = document.getElementById("consolidadoMesesDropdownBtn");
+        const dropdown = document.getElementById("consolidadoMesesDropdown");
+        
+        if (!dropdownBtn || !dropdown) return;
+        
+        dropdownBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (dropdown.style.display === "block") {
+                dropdown.style.display = "none";
+            } else {
+                consolidadoMesesTempSeleccionados = [...consolidadoMesesSeleccionados];
+                actualizarListaMesesDropdown();
+                dropdown.style.display = "block";
+            }
+        });
+        
+        document.addEventListener("click", (e) => {
+            if (dropdown && !dropdown.contains(e.target) && e.target !== dropdownBtn) {
+                dropdown.style.display = "none";
+            }
+        });
+        
+        const selectAllBtn = document.getElementById("consolidadoSelectAllMeses");
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener("click", () => {
+                const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = true);
+            });
+        }
+        
+        const clearAllBtn = document.getElementById("consolidadoClearAllMeses");
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener("click", () => {
+                const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+            });
+        }
+        
+        const cancelarBtn = document.getElementById("consolidadoCancelarMeses");
+        if (cancelarBtn) {
+            cancelarBtn.addEventListener("click", () => {
+                dropdown.style.display = "none";
+            });
+        }
+        
+        const aceptarBtn = document.getElementById("consolidadoAceptarMeses");
+        if (aceptarBtn) {
+            aceptarBtn.addEventListener("click", () => {
+                const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
+                consolidadoMesesSeleccionados = [];
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        consolidadoMesesSeleccionados.push(cb.value);
+                    }
+                });
+                dropdown.style.display = "none";
+                renderizarConsolidado();
+                actualizarTextoBtnMeses();
+            });
+        }
+    }
    
+    // ==================== INICIALIZACIÓN PRINCIPAL ====================
+    async function init() {
+        initSupabase();
+        
+        await openDB();
+        await openReglasDB();
+        
+        await loadAllRecords();
+        await loadAllReglas();
+        
+        // === CARGA AUTOMÁTICA DESDE SUPABASE ===
+        console.log("🔄 Cargando datos desde Supabase...");
+        await loadFromSupabase();
+        
+        if (databaseRecords.length > 0) await saveAllRecordsToDB();
+        if (reglasRecords.length > 0) await saveAllReglasToDB();
+        
+        await loadAllRecords();
+        await loadAllReglas();
+        
+        initTabs();
+        initDragAndDrop();
+        applyFilters();
+        renderCurrentPage();
+        applyReglasFilters();
+        renderReglasCurrentPage();
+        updateDashboardStats();
+        renderizarConsolidado();
+        
+        // Botones existentes
+        document.getElementById('clearFiltersBtn')?.addEventListener('click', clearAllFilters);
+        document.getElementById('deleteDatabaseBtn')?.addEventListener('click', deleteDatabase);
+        document.getElementById('exportDataBtn')?.addEventListener('click', exportToExcel);
+        document.getElementById('clearReglasFiltersBtn')?.addEventListener('click', clearReglasFilters);
+        document.getElementById('deleteReglasDatabaseBtn')?.addEventListener('click', deleteReglasDatabase);
+        document.getElementById('exportReglasBtn')?.addEventListener('click', exportReglasToExcel);
+        
+        // === BOTÓN LIMPIAR NUBE ===
+        const headerDiv = document.querySelector('.header > div');
+        if (headerDiv) {
+            const cleanBtn = document.createElement('button');
+            cleanBtn.id = 'limpiarNubeBtn';
+            cleanBtn.innerHTML = '🗑️ Limpiar Nube';
+            cleanBtn.style.cssText = 'background:#dc2626; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.8rem; margin-left:12px;';
+            cleanBtn.onclick = clearCloudData;
+            headerDiv.appendChild(cleanBtn);
+        }
+        
+        inicializarDropdownAnios();
+        inicializarDropdownMeses();
+        
+        console.log("🚀 App iniciada con sincronización automática");
+    }
+   
+// Botón de cerrar sesión
+// Botón de cerrar sesión - ACTUALIZADO con limpieza de timers
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        if (sessionTimeout) clearInterval(sessionTimeout);
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        
+        sessionStorage.removeItem('userProfile');
+        currentUserProfile = null;
+        
+        const timerElement = document.getElementById('sessionTimer');
+        if (timerElement) timerElement.remove();
+        
+        mostrarModalLogin();
+        
+        const allTabs = document.querySelectorAll('.tab-btn');
+        allTabs.forEach(tab => tab.classList.remove('hidden-tab'));
+        const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
+        if (cleanCloudBtn) cleanCloudBtn.classList.remove('hidden');
+    });
+}
+
+    initLoginSystem();
     init();
 </script>
 </body>
