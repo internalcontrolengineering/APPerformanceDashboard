@@ -534,30 +534,233 @@
     background-color: #f8fafc;
 }
 
+/* Tablets y móviles grandes */
 @media (max-width: 768px) {
-    .header { padding: 0.75rem 1rem; }
-    .header h1 { font-size: 1.1rem; }
-    .tab-btn { padding: 0.75rem 0.8rem; font-size: 0.75rem; }
-    .tab-content { padding: 1rem; }
-    .card { padding: 1rem; }
-    .stat-card { min-width: 120px; padding: 0.75rem; }
-    th, td { padding: 6px 4px; font-size: 0.65rem; }
-    .btn-group { gap: 8px; }
-    button:not(.tab-btn) { padding: 6px 10px; font-size: 0.7rem; }
+    body {
+        padding: 16px 12px;
+    }
+    
+    .header { 
+        padding: 0.6rem 1rem; 
+    }
+    .header h1 { 
+        font-size: 1rem; 
+    }
+    .header img {
+        height: 35px !important;
+    }
+    
+    .tabs-nav {
+        padding: 0 0.8rem;
+        gap: 0.1rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .tab-btn { 
+        padding: 0.6rem 0.7rem; 
+        font-size: 0.7rem;
+        flex-shrink: 0;
+    }
+    
+    .tab-content { 
+        padding: 0.8rem; 
+    }
+    
+    .card { 
+        padding: 0.8rem; 
+        margin-bottom: 1rem;
+    }
+    
+    .card-title { 
+        font-size: 1.1rem; 
+        margin-bottom: 0.8rem;
+    }
+    
+    .stat-card { 
+        min-width: 100px; 
+        padding: 0.6rem;
+        font-size: 0.7rem;
+    }
+    
+    .table-wrapper {
+        max-height: 450px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    th, td { 
+        padding: 8px 6px; 
+        font-size: 0.7rem;
+        min-width: 80px;
+    }
+    
+    .btn-group { 
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    
+    button:not(.tab-btn) { 
+        padding: 6px 10px; 
+        font-size: 0.7rem; 
+    }
+    
+    .dropzone-area {
+        padding: 1.2rem 1rem;
+    }
+    
+    .dropzone-area div {
+        font-size: 0.8rem;
+    }
+    
+    .filter-dropdown {
+        max-width: 260px;
+        min-width: 180px;
+    }
+    
     .consolidado-tabla thead tr:last-child th {
-        top: 21px !important;
+        top: 55px !important;
+    }
+    
+    .pagination button {
+        padding: 5px 10px;
+        font-size: 0.65rem;
     }
 }
 
+/* Móviles pequeños */
 @media (max-width: 480px) {
-    .header h1 { font-size: 0.9rem; }
-    .tab-btn { padding: 0.5rem 0.5rem; font-size: 0.65rem; }
-    .card-title { font-size: 1rem; }
-    .stat-card { min-width: 100px; padding: 0.5rem; font-size: 0.7rem; }
-    .table-wrapper { max-height: 400px; }
-    th, td { padding: 4px 2px; font-size: 0.55rem; }
+    body {
+        padding: 12px 8px;
+    }
+    
+    .app-container {
+        border-radius: 1rem;
+    }
+    
+    .header h1 { 
+        font-size: 0.85rem; 
+    }
+    
+    .header img {
+        height: 28px !important;
+    }
+    
+    .header > div {
+        gap: 10px !important;
+    }
+    
+    .tab-btn { 
+        padding: 0.5rem 0.6rem; 
+        font-size: 0.6rem;
+    }
+    
+    .tab-content { 
+        padding: 0.6rem; 
+    }
+    
+    .card-title { 
+        font-size: 0.95rem; 
+        padding-left: 0.6rem;
+    }
+    
+    .stat-grid {
+        gap: 0.6rem;
+    }
+    
+    .stat-card { 
+        min-width: 85px; 
+        padding: 0.5rem;
+        font-size: 0.65rem;
+    }
+    
+    .stat-card strong {
+        font-size: 0.9rem;
+    }
+    
+    .table-wrapper { 
+        max-height: 350px; 
+    }
+    
+    th, td { 
+        padding: 6px 4px; 
+        font-size: 0.6rem;
+        min-width: 70px;
+    }
+    
+    .btn-group button {
+        padding: 5px 8px;
+        font-size: 0.6rem;
+    }
+    
+    .file-input-label {
+        padding: 8px 14px;
+        font-size: 0.75rem;
+    }
+    
+    .dropzone-area {
+        padding: 1rem;
+    }
+    
+    .dropzone-area div {
+        font-size: 0.7rem;
+    }
+    
+    .filter-dropdown {
+        max-width: 220px;
+        min-width: 160px;
+    }
+    
+    .filter-option {
+        padding: 5px 8px;
+        font-size: 0.65rem;
+    }
+    
+    .pagination {
+        gap: 6px;
+    }
+    
+    .pagination button {
+        padding: 4px 8px;
+        font-size: 0.6rem;
+    }
+    
+    .pagination .page-info {
+        font-size: 0.65rem;
+    }
+    
     .consolidado-tabla thead tr:last-child th {
-        top: 18px !important;
+        top: 52px !important;
+        font-size: 0.55rem !important;
+        padding: 6px 3px !important;
+    }
+    
+    .session-timer {
+        bottom: 10px;
+        left: 10px;
+        padding: 6px 12px;
+        font-size: 0.65rem;
+    }
+    
+    .session-timer span {
+        font-size: 0.7rem;
+    }
+}
+
+/* Ajustes para modo landscape en móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+    .table-wrapper {
+        max-height: 300px;
+    }
+    
+    .tab-btn {
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .header {
+        padding: 0.4rem 1rem;
     }
 }
 
@@ -622,6 +825,105 @@
     transform: scale(1.02);
     background: #1a4a6e;
 }
+
+/* Mejoras adicionales para responsive */
+.tabs-nav {
+    scrollbar-width: thin;
+}
+
+.tabs-nav::-webkit-scrollbar {
+    height: 3px;
+}
+
+.tabs-nav::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 3px;
+}
+
+.tabs-nav::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 3px;
+}
+
+/* Tablas responsivas */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ajuste de tablas consolidadas en móvil */
+@media (max-width: 768px) {
+    .consolidado-tabla td,
+    .consolidado-tabla th {
+        white-space: nowrap;
+    }
+    
+    #resumen-general-wrapper table {
+        font-size: 0.65rem;
+        min-width: 500px;
+    }
+    
+    #resumen-general-wrapper th,
+    #resumen-general-wrapper td {
+        padding: 6px 4px;
+        white-space: nowrap;
+    }
+}
+
+/* Botones táctiles más grandes en móvil */
+@media (max-width: 768px) {
+    button, 
+    .tab-btn,
+    .file-input-label,
+    .btn-secondary,
+    .btn-danger,
+    .btn-warning,
+    #logoutBtn {
+        min-height: 36px;
+    }
+    
+    .tab-btn {
+        min-height: 40px;
+    }
+}
+
+/* Espaciado para elementos táctiles */
+@media (max-width: 768px) {
+    .filter-option {
+        min-height: 36px;
+    }
+    
+    .filter-option input {
+        width: 18px;
+        height: 18px;
+    }
+    
+    select, 
+    .select-modern {
+        min-height: 36px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Footer responsive: botón arriba en móvil */
+@media (max-width: 768px) {
+    .footer-pc {
+        display: none !important;
+    }
+    .footer-mobile {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .footer-pc {
+        display: flex !important;
+    }
+    .footer-mobile {
+        display: none !important;
+    }
+}
+
     </style>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -678,13 +980,13 @@
 
 <div class="app-container">
 <div class="header">
-    <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between; flex-wrap: wrap;">
-        <div style="display: flex; align-items: center; gap: 20px;">
+    <div style="display: flex; align-items: center; gap: 12px; justify-content: space-between; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
             <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoTesorer%C3%ADa.png" 
                  alt="Logo Tesorería" 
-                 style="height: 50px; width: auto; object-fit: contain; border-radius: 8px;">
-            <div style="width: 2px; height: 40px; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.2) 100%);"></div>
-            <h1 style="margin: 0; flex: 1;">AP Performance Dashboard</h1>
+                 style="height: 45px; width: auto; object-fit: contain; border-radius: 8px;">
+            <div style="width: 1px; height: 30px; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.2) 100%);"></div>
+            <h1 style="margin: 0; font-size: 1.3rem;">AP Performance Dashboard</h1>
         </div>        
     </div>
 </div>
@@ -816,32 +1118,36 @@
         </div>
     </div>
 
-<footer style="background: #f8fafc; padding: 0.75rem 1.5rem; border-top: 1px solid #e9edf2;">
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+<footer style="background: #f8fafc; padding: 0.6rem 1rem; border-top: 1px solid #e9edf2;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
         
-        <!-- Espacio vacío a la izquierda (para balancear) -->
-        <div style="width: 120px;"></div>
+        <!-- Botón cerrar sesión ARRIBA (siempre arriba en PC y móvil) -->
+        <button id="logoutBtn" style="background: #475569; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 500; min-width: 130px;">🚪 Cerrar sesión</button>
         
-        <!-- Parte central: logos e información centrada -->
-        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; flex: 1;">
-            <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoCI-G.png" 
-                 alt="Control Interno" 
-                 style="height: 22px; width: auto; object-fit: contain; opacity: 0.5;">
-            <div style="width: 1px; height: 24px; background-color: #cbd5e1;"></div>
-            <div style="display: flex; flex-direction: column; line-height: 1.2; text-align: center;">
-                <span style="font-size: 0.5rem; color: #0A2540;">Control Interno</span>
-                <span style="font-size: 0.4rem; color: #94a3b8; font-weight: 500;">Ingeniería de Control</span>
+        <!-- Logos e información DEBAJO -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            
+            <!-- Logo Control Interno -->
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoCI-G.png" 
+                     alt="Control Interno" 
+                     style="height: 18px; width: auto; object-fit: contain; opacity: 0.6;">
+                <div style="display: flex; flex-direction: column; line-height: 1.2;">
+                    <span style="font-size: 0.45rem; color: #0A2540; font-weight: 500;">Control Interno</span>
+                    <span style="font-size: 0.35rem; color: #94a3b8;">Ingeniería de Control</span>
+                </div>
             </div>
-            <div style="width: 1px; height: 24px; background-color: #cbd5e1;"></div>
+            
+            <!-- Separador -->
+            <div style="width: 1px; height: 20px; background-color: #cbd5e1;"></div>
+            
+            <!-- AP Dashboard -->
             <div style="display: flex; flex-direction: column; line-height: 1.2; text-align: center;">
-                <span style="font-size: 0.5rem; color: #0A2540;">AP Performance Dashboard</span>
-                <span style="font-size: 0.4rem; color: #94a3b8; font-weight: 500;">V1.0 | Mayo 2026</span>
+                <span style="font-size: 0.45rem; color: #0A2540; font-weight: 500;">AP Performance Dashboard</span>
+                <span style="font-size: 0.35rem; color: #94a3b8;">V1.0 | Mayo 2026</span>
             </div>
+            
         </div>
-        
-        <!-- Botón de cerrar sesión a la derecha -->
-        <button id="logoutBtn" style="background: #475569; color: white; border: none; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 500; width: 120px;">🚪 Cerrar sesión</button>
-        
     </div>
 </footer>
 </div>
