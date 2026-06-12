@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>AP Performance Dashboard</title>
     <style>
         * {
@@ -475,45 +475,84 @@
             font-weight: 500;
         }
 
-/* Estilos para la tabla de consolidado */
+/* Estilos para la tabla de consolidado - VERSIÓN CORREGIDA */
 .consolidado-tabla {
     position: relative;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .consolidado-tabla thead tr:first-child th {
-    background: #f1f5f9;
+    background: #0A2540;
+    color: white;
     font-weight: 600;
     position: sticky;
     top: 0;
-    z-index: 20;
-    border-bottom: 2px solid #cbd5e1;
+    z-index: 30;
+    border-bottom: 2px solid #1e4a6b;
 }
 
 .consolidado-tabla thead tr:last-child th {
-    background: #f1f5f9;
+    background: #1e4a6b;
+    color: white;
     font-weight: 600;
     position: sticky;
-    top: 41px;
-    z-index: 15;
-    border-bottom: 1px solid #e2e8f0;
+    top: 42px;
+    z-index: 25;
+    border-bottom: 1px solid #2d6a8f;
 }
 
+/* Primera columna sticky con fondo SÓLIDO */
 .consolidado-tabla td:first-child,
 .consolidado-tabla th:first-child {
     position: sticky;
     left: 0;
-    background: #f1f5f9;
+    background: #ffffff;
     font-weight: 600;
     text-align: left;
-    z-index: 10;
+    z-index: 20;
+    box-shadow: 3px 0 8px -4px rgba(0,0,0,0.15);
 }
 
+/* Fondo para celdas de datos de primera columna */
+.consolidado-tabla td:first-child {
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+}
+
+/* Fondo para encabezados de primera columna */
 .consolidado-tabla thead tr:first-child th:first-child {
-    z-index: 30;
+    background: #0A2540;
+    z-index: 35;
 }
 
 .consolidado-tabla thead tr:last-child th:first-child {
-    z-index: 25;
+    background: #1e4a6b;
+    z-index: 30;
+}
+
+/* Hover en fila - primera columna cambia de fondo */
+.consolidado-tabla tr:hover td:first-child {
+    background-color: #f1f5f9;
+}
+
+/* Aseguramos que todas las celdas tengan fondo sólido */
+.consolidado-tabla td,
+.consolidado-tabla th {
+    background-color: #ffffff;
+}
+
+.consolidado-tabla thead th {
+    background-color: #f1f5f9;
+}
+
+.consolidado-tabla thead tr:first-child th {
+    background-color: #0A2540;
+}
+
+.consolidado-tabla thead tr:last-child th {
+    background-color: #1e4a6b;
 }
 
 #resumen-general-wrapper table {
@@ -630,7 +669,7 @@
     }
 }
 
-/* Móviles pequeños */
+/* Móviles pequeños - CORRECCIÓN TOTAL PARA TABLA CONSOLIDADO */
 @media (max-width: 480px) {
     body {
         padding: 12px 8px;
@@ -731,10 +770,134 @@
         font-size: 0.65rem;
     }
     
+    /* ===== CORRECCIONES PRINCIPALES PARA CONSOLIDADO EN MÓVIL ===== */
+    #consolidado .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0;
+        padding: 0;
+        border-radius: 8px;
+    }
+    
+    .consolidado-tabla {
+        font-size: 0.55rem;
+        min-width: 700px;
+        border-collapse: collapse;
+    }
+    
+    .consolidado-tabla th,
+    .consolidado-tabla td {
+        padding: 8px 6px;
+        white-space: nowrap;
+        font-size: 0.55rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    /* Primera columna sticky con fondo BLANCO SÓLIDO */
+    .consolidado-tabla td:first-child,
+    .consolidado-tabla th:first-child {
+        position: sticky;
+        left: 0;
+        background: #ffffff;
+        z-index: 20;
+        font-weight: 600;
+        min-width: 130px;
+        max-width: 150px;
+        white-space: normal;
+        word-break: break-word;
+        line-height: 1.3;
+        box-shadow: 3px 0 8px -4px rgba(0,0,0,0.2);
+    }
+    
+    /* Fondo específico para celdas de datos de primera columna */
+    .consolidado-tabla td:first-child {
+        background-color: #ffffff;
+    }
+    
+    /* Encabezados de primera columna con colores correctos */
+    .consolidado-tabla thead tr:first-child th:first-child {
+        background: #0A2540;
+        z-index: 35;
+        color: white;
+    }
+    
+    .consolidado-tabla thead tr:last-child th:first-child {
+        background: #1e4a6b;
+        z-index: 30;
+        color: white;
+    }
+    
+    /* Hover en primera columna */
+    .consolidado-tabla tr:hover td:first-child {
+        background-color: #f1f5f9;
+    }
+    
+    /* Asegurar que todas las celdas tengan fondo sólido */
+    .consolidado-tabla td {
+        background-color: #ffffff;
+    }
+    
+    .consolidado-tabla tr:nth-child(even) td {
+        background-color: #fafcff;
+    }
+    
+    .consolidado-tabla tr:nth-child(even) td:first-child {
+        background-color: #fafcff;
+    }
+    
+    .consolidado-tabla tr:hover td {
+        background-color: #f8fafc;
+    }
+    
+    /* Altura correcta para encabezados sticky */
+    .consolidado-tabla thead tr:first-child th {
+        top: 0;
+        background: #0A2540;
+    }
+    
     .consolidado-tabla thead tr:last-child th {
-        top: 52px !important;
-        font-size: 0.55rem !important;
-        padding: 6px 3px !important;
+        top: 42px;
+        background: #1e4a6b;
+    }
+    
+    /* Resumen general responsive */
+    #resumen-general-wrapper {
+        overflow-x: auto;
+        margin: 0;
+        padding: 0;
+    }
+    
+    #resumen-general-wrapper table {
+        font-size: 0.55rem;
+        min-width: 500px;
+    }
+    
+    #resumen-general-wrapper th,
+    #resumen-general-wrapper td {
+        padding: 6px 4px;
+        white-space: nowrap;
+        font-size: 0.55rem;
+    }
+    
+    /* Dropdowns centrados en móvil */
+    #consolidadoAnioDropdown,
+    #consolidadoMesesDropdown {
+        position: fixed;
+        left: 50% !important;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 300px;
+        top: auto !important;
+        bottom: auto !important;
+        z-index: 2000;
+    }
+    
+    /* Botones de filtro más compactos */
+    #consolidadoAnioDropdownBtn,
+    #consolidadoMesesDropdownBtn {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+        min-height: 32px;
     }
     
     .session-timer {
@@ -761,6 +924,14 @@
     
     .header {
         padding: 0.4rem 1rem;
+    }
+    
+    .consolidado-tabla {
+        font-size: 0.6rem;
+    }
+    
+    .consolidado-tabla td:first-child {
+        min-width: 110px;
     }
 }
 
@@ -798,7 +969,7 @@
 .session-timer {
     position: fixed;
     bottom: 20px;
-    left: 20px;  /* ← Cambia right por left */
+    left: 20px;
     background: #0A2540;
     color: white;
     padding: 10px 18px;
@@ -849,25 +1020,6 @@
 .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-}
-
-/* Ajuste de tablas consolidadas en móvil */
-@media (max-width: 768px) {
-    .consolidado-tabla td,
-    .consolidado-tabla th {
-        white-space: nowrap;
-    }
-    
-    #resumen-general-wrapper table {
-        font-size: 0.65rem;
-        min-width: 500px;
-    }
-    
-    #resumen-general-wrapper th,
-    #resumen-general-wrapper td {
-        padding: 6px 4px;
-        white-space: nowrap;
-    }
 }
 
 /* Botones táctiles más grandes en móvil */
@@ -931,22 +1083,18 @@
 <body>
 
 <!-- MODAL DE LOGIN -->
-<!-- MODAL DE LOGIN MODERNO AZUL -->
 <div id="loginModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0A2540 0%, #1a4a6e 100%); z-index: 10000; display: flex; align-items: center; justify-content: center;">
     <div style="background: white; border-radius: 32px; padding: 40px; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);">
         
-        <!-- Logo con fondo azul redondeado -->
         <div style="background: linear-gradient(135deg, #0A2540, #1d4d6e); border-radius: 60px; padding: 12px 24px; display: inline-block; margin-bottom: 20px;">
             <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoTesorer%C3%ADa.png" 
                  alt="Logo Tesorería" 
                  style="height: 55px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
         </div>
         
-        <!-- Títulos -->
         <h2 style="color: #0A2540; margin-bottom: 8px; font-size: 1.8rem; font-weight: 700;">Acceso al Sistema</h2>
         <p style="color: #5b6e8c; margin-bottom: 30px; font-size: 0.85rem;">AP Performance Dashboard</p>
         
-        <!-- Selector de Perfil -->
         <div style="margin-bottom: 20px; text-align: left;">
             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e293b;">👤 Perfil</label>
             <select id="loginPerfil" style="width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 0.9rem; font-weight: 500; background: white; cursor: pointer; outline: none; transition: all 0.2s;">
@@ -955,7 +1103,6 @@
             </select>
         </div>
         
-        <!-- Campo Contraseña -->
         <div style="margin-bottom: 28px; text-align: left;">
             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e293b;">🔒 Contraseña</label>
             <input type="password" id="loginPassword" 
@@ -965,7 +1112,6 @@
                    onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
         </div>
         
-        <!-- Botón Ingresar -->
         <button id="loginBtn" 
                 style="background: linear-gradient(135deg, #0A2540 0%, #1a4a6e 100%); color: white; border: none; padding: 14px; border-radius: 16px; font-size: 1rem; cursor: pointer; width: 100%; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 12px rgba(10,37,64,0.2);"
                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(10,37,64,0.3)'"
@@ -973,7 +1119,6 @@
             🚀 Ingresar
         </button>
         
-        <!-- Mensaje de error -->
         <div id="loginError" style="color: #dc2626; margin-top: 20px; font-size: 0.8rem; display: none; background: #fee2e2; padding: 10px; border-radius: 12px;"></div>
     </div>
 </div>
@@ -1121,13 +1266,10 @@
 <footer style="background: #f8fafc; padding: 0.6rem 1rem; border-top: 1px solid #e9edf2;">
     <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
         
-        <!-- Botón cerrar sesión ARRIBA (siempre arriba en PC y móvil) -->
         <button id="logoutBtn" style="background: #475569; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 500; min-width: 130px;">🚪 Cerrar sesión</button>
         
-        <!-- Logos e información DEBAJO -->
         <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
             
-            <!-- Logo Control Interno -->
             <div style="display: flex; align-items: center; gap: 6px;">
                 <img src="https://raw.githubusercontent.com/internalcontrolengineering/Desarrollos/main/LogoCI-G.png" 
                      alt="Control Interno" 
@@ -1138,10 +1280,8 @@
                 </div>
             </div>
             
-            <!-- Separador -->
             <div style="width: 1px; height: 20px; background-color: #cbd5e1;"></div>
             
-            <!-- AP Dashboard -->
             <div style="display: flex; flex-direction: column; line-height: 1.2; text-align: center;">
                 <span style="font-size: 0.45rem; color: #0A2540; font-weight: 500;">AP Performance Dashboard</span>
                 <span style="font-size: 0.35rem; color: #94a3b8;">V1.0 | Mayo 2026</span>
@@ -1163,7 +1303,7 @@
     function initSupabase() {
         if (typeof supabase !== 'undefined' && supabase.createClient) {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('✅ Supabase inicializado (versión mejorada)');
+            console.log('✅ Supabase inicializado');
             return true;
         }
         console.warn('⚠️ Supabase no disponible');
@@ -1176,7 +1316,6 @@
         syncInProgress = true;
         
         try {
-            // REGLAS
             if (reglasRecords.length > 0) {
                 const reglasToSend = reglasRecords.map(r => ({
                     clave_proveedor: r.claveProveedor,
@@ -1189,7 +1328,6 @@
                 await supabaseClient.from('ap_reglas').upsert(reglasToSend, { onConflict: 'clave_proveedor' });
             }
 
-            // REGISTROS
             if (databaseRecords.length > 0) {
                 const recordsToSend = databaseRecords.map(r => ({
                     folio_entrada: r.folioEntrada,
@@ -1212,285 +1350,248 @@
                 }
             }
 
-            if (!silent) {
-                console.log("✅ Auto-sincronización completada");
-            }
+            if (!silent) console.log("✅ Auto-sincronización completada");
             return true;
 
         } catch (error) {
             console.error("Error en auto-sync:", error);
-            if (!silent) alert("Error al sincronizar automáticamente: " + error.message);
+            if (!silent) alert("Error al sincronizar: " + error.message);
             return false;
         } finally {
             syncInProgress = false;
         }
     }
 
-// ==================== SISTEMA DE PERFILES Y AUTENTICACIÓN ====================
-let currentUserProfile = null;
-let sessionTimeout = null;
-let inactivityTimer = null;
-
-// ==================== CONFIGURACIÓN DE SESIÓN ====================
-const TIEMPO_SESION_MINUTOS = 10; // 👈 CAMBIA SOLO ESTE VALOR (en minutos)
-const TIEMPO_SESION_SEGUNDOS = TIEMPO_SESION_MINUTOS * 60; // 60 segundos por minuto
-
-let remainingTime = TIEMPO_SESION_SEGUNDOS;
-const PERFILES = {
-    ADMINISTRATIVO: {
-        nombre: 'administrativo',
-        password: 'ControlAdministrativo2026',
-        visibleTabs: ['consolidado', 'dashboard', 'basedatos', 'reglas', 'cargabatch'],
-        hiddenTabs: [],
-        showCleanCloudButton: true
-    },
-    DIRECTIVO: {
-        nombre: 'directivo',
-        password: 'ControlDirectivo2026',
-        visibleTabs: ['consolidado', 'dashboard'],
-        hiddenTabs: ['basedatos', 'reglas', 'cargabatch'],
-        showCleanCloudButton: false
-    }
-};
-
-function verificarCredenciales(perfil, password) {
-    if (perfil === 'administrativo' && password === PERFILES.ADMINISTRATIVO.password) {
-        return PERFILES.ADMINISTRATIVO;
-    }
-    if (perfil === 'directivo' && password === PERFILES.DIRECTIVO.password) {
-        return PERFILES.DIRECTIVO;
-    }
-    return null;
-}
-
-function aplicarPermisosPorPerfil(perfil) {
-    currentUserProfile = perfil.nombre;
-    
-    // Ocultar todas las pestañas primero
-    const allTabs = document.querySelectorAll('.tab-btn');
-    allTabs.forEach(tab => {
-        tab.classList.add('hidden-tab');
-    });
-    
-    // Mostrar solo las pestañas permitidas
-    perfil.visibleTabs.forEach(tabId => {
-        const tabButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
-        if (tabButton) {
-            tabButton.classList.remove('hidden-tab');
-        }
-    });
-    
-    // Ocultar botón "Limpiar Nube" si el perfil no debe verlo
-    const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
-    if (cleanCloudBtn) {
-        if (perfil.showCleanCloudButton) {
-            cleanCloudBtn.classList.remove('hidden');
-        } else {
-            cleanCloudBtn.classList.add('hidden');
-        }
-    }
-    
-    // Si el perfil actual no tiene acceso a la pestaña activa, cambiar a la primera permitida
-    const activeTab = document.querySelector('.tab-content.active')?.id;
-    if (activeTab && !perfil.visibleTabs.includes(activeTab)) {
-        const firstVisibleTab = perfil.visibleTabs[0];
-        if (firstVisibleTab) {
-            document.querySelector(`.tab-btn[data-tab="${firstVisibleTab}"]`)?.click();
-        }
-    }
-    
-    // Reorganizar las pestañas visibles (mostrar solo las permitidas)
-    const tabsContainer = document.querySelector('.tabs-nav');
-    const visibleButtons = Array.from(allTabs).filter(btn => !btn.classList.contains('hidden-tab'));
-    
-    // Reordenar físicamente las pestañas (opcional, para que se vean ordenadas)
-    visibleButtons.forEach(btn => {
-        tabsContainer.appendChild(btn);
-    });
-    
-    console.log(`✅ Perfil ${perfil.nombre.toUpperCase()} activado. Pestañas visibles:`, perfil.visibleTabs);
-}
-
-function mostrarModalLogin() {
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.querySelector('.app-container').classList.add('login-hidden');
-    }
-}
-
-function ocultarModalLogin() {
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.querySelector('.app-container').classList.remove('login-hidden');
-    }
-}
-
-function initLoginSystem() {
-    const loginBtn = document.getElementById('loginBtn');
-    const passwordInput = document.getElementById('loginPassword');
-    const perfilSelect = document.getElementById('loginPerfil');
-    const errorDiv = document.getElementById('loginError');
-    
+    // ==================== SISTEMA DE PERFILES Y AUTENTICACIÓN ====================
+    let currentUserProfile = null;
     let sessionTimeout = null;
     let inactivityTimer = null;
-    let remainingTimeGlobal = TIEMPO_SESION_SEGUNDOS;
-    
-    function resetInactivityTimer() {
-        if (inactivityTimer) clearTimeout(inactivityTimer);
-        if (sessionTimeout) clearInterval(sessionTimeout);
+
+    const TIEMPO_SESION_MINUTOS = 10;
+    const TIEMPO_SESION_SEGUNDOS = TIEMPO_SESION_MINUTOS * 60;
+
+    let remainingTime = TIEMPO_SESION_SEGUNDOS;
+    const PERFILES = {
+        ADMINISTRATIVO: {
+            nombre: 'administrativo',
+            password: 'ControlAdministrativo2026',
+            visibleTabs: ['consolidado', 'dashboard', 'basedatos', 'reglas', 'cargabatch'],
+            hiddenTabs: [],
+            showCleanCloudButton: true
+        },
+        DIRECTIVO: {
+            nombre: 'directivo',
+            password: 'ControlDirectivo2026',
+            visibleTabs: ['consolidado', 'dashboard'],
+            hiddenTabs: ['basedatos', 'reglas', 'cargabatch'],
+            showCleanCloudButton: false
+        }
+    };
+
+    function verificarCredenciales(perfil, password) {
+        if (perfil === 'administrativo' && password === PERFILES.ADMINISTRATIVO.password) return PERFILES.ADMINISTRATIVO;
+        if (perfil === 'directivo' && password === PERFILES.DIRECTIVO.password) return PERFILES.DIRECTIVO;
+        return null;
+    }
+
+    function aplicarPermisosPorPerfil(perfil) {
+        currentUserProfile = perfil.nombre;
         
-        if (currentUserProfile) {
-            remainingTimeGlobal = TIEMPO_SESION_SEGUNDOS;
-            updateTimerDisplay();
-            
-            sessionTimeout = setInterval(() => {
-                if (remainingTimeGlobal > 0) {
-                    remainingTimeGlobal--;
-                    updateTimerDisplay();
-                    if (remainingTimeGlobal === 0) {
-                        cerrarSesionPorInactividad();
-                    }
-                }
-            }, 1000);
-        }
-    }
-    
-    function updateTimerDisplay() {
-    let timerElement = document.getElementById('sessionTimer');
-    if (!timerElement && currentUserProfile) {
-        // Crear el elemento flotante
-        const timerDiv = document.createElement('div');
-        timerDiv.id = 'sessionTimer';
-        timerDiv.className = 'session-timer';
-        const minutosIniciales = Math.floor(TIEMPO_SESION_SEGUNDOS / 60);
-        const segundosIniciales = TIEMPO_SESION_SEGUNDOS % 60;
-        timerDiv.innerHTML = `⏱️ <span id="timerValue">${minutosIniciales.toString().padStart(2, '0')}:${segundosIniciales.toString().padStart(2, '0')}</span>`;
-        document.body.appendChild(timerDiv); // ← Cambiado a document.body
-        timerElement = timerDiv;
-    }
-    
-    if (timerElement) {
-        const minutes = Math.floor(remainingTimeGlobal / 60);
-        const seconds = remainingTimeGlobal % 60;
-        const timerSpan = document.getElementById('timerValue');
-        if (timerSpan) {
-            timerSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-    }
-    
-    if (!currentUserProfile && timerElement) {
-        timerElement.remove();
-    }
-}
-    
-    function cerrarSesionPorInactividad() {
-        if (currentUserProfile) {
-            if (sessionTimeout) clearInterval(sessionTimeout);
-            if (inactivityTimer) clearTimeout(inactivityTimer);
-            
-            alert(`⏰ Sesión expirada por inactividad (${TIEMPO_SESION_MINUTOS} minuto${TIEMPO_SESION_MINUTOS !== 1 ? 's' : ''}). Por favor, inicie sesión nuevamente.`);
-            sessionStorage.removeItem('userProfile');
-            currentUserProfile = null;
-            mostrarModalLogin();
-            
-            const allTabs = document.querySelectorAll('.tab-btn');
-            allTabs.forEach(tab => tab.classList.remove('hidden-tab'));
-            const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
-            if (cleanCloudBtn) cleanCloudBtn.classList.remove('hidden');
-            
-            const timerElement = document.getElementById('sessionTimer');
-            if (timerElement) timerElement.remove();
-        }
-    }
-    
-    function setupInactivityListeners() {
-        const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-        events.forEach(event => {
-            document.removeEventListener(event, resetInactivityTimer);
-            document.addEventListener(event, resetInactivityTimer);
+        const allTabs = document.querySelectorAll('.tab-btn');
+        allTabs.forEach(tab => tab.classList.add('hidden-tab'));
+        
+        perfil.visibleTabs.forEach(tabId => {
+            const tabButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+            if (tabButton) tabButton.classList.remove('hidden-tab');
         });
-    }
-    
-    function intentarLogin() {
-        const perfil = perfilSelect.value;
-        const password = passwordInput.value;
-        const perfilValido = verificarCredenciales(perfil, password);
         
-        if (perfilValido) {
-            sessionStorage.setItem('userProfile', JSON.stringify({
-                nombre: perfilValido.nombre,
-                visibleTabs: perfilValido.visibleTabs,
-                hiddenTabs: perfilValido.hiddenTabs,
-                showCleanCloudButton: perfilValido.showCleanCloudButton,
-                loginTime: Date.now()
-            }));
-            
-            currentUserProfile = perfilValido.nombre;
-            aplicarPermisosPorPerfil(perfilValido);
-            ocultarModalLogin();
-            errorDiv.style.display = 'none';
-            passwordInput.value = '';
-            
-            remainingTime = TIEMPO_SESION_SEGUNDOS;
-            updateTimerDisplay();
-            setupInactivityListeners();
-            resetInactivityTimer();
-        } else {
-            errorDiv.textContent = '❌ Contraseña incorrecta. Intente nuevamente.';
-            errorDiv.style.display = 'block';
-            passwordInput.value = '';
-            passwordInput.focus();
+        const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
+        if (cleanCloudBtn) {
+            if (perfil.showCleanCloudButton) cleanCloudBtn.classList.remove('hidden');
+            else cleanCloudBtn.classList.add('hidden');
+        }
+        
+        const activeTab = document.querySelector('.tab-content.active')?.id;
+        if (activeTab && !perfil.visibleTabs.includes(activeTab)) {
+            const firstVisibleTab = perfil.visibleTabs[0];
+            if (firstVisibleTab) document.querySelector(`.tab-btn[data-tab="${firstVisibleTab}"]`)?.click();
+        }
+        
+        const tabsContainer = document.querySelector('.tabs-nav');
+        const visibleButtons = Array.from(allTabs).filter(btn => !btn.classList.contains('hidden-tab'));
+        visibleButtons.forEach(btn => tabsContainer.appendChild(btn));
+        
+        console.log(`✅ Perfil ${perfil.nombre.toUpperCase()} activado.`);
+    }
+
+    function mostrarModalLogin() {
+        const modal = document.getElementById('loginModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.querySelector('.app-container').classList.add('login-hidden');
         }
     }
-    
-    // Verificar sesión guardada al cargar
-    const savedProfile = sessionStorage.getItem('userProfile');
-    if (savedProfile) {
-        try {
-            const perfilData = JSON.parse(savedProfile);
-            const tiempoTranscurrido = (Date.now() - perfilData.loginTime) / 1000;
+
+    function ocultarModalLogin() {
+        const modal = document.getElementById('loginModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.querySelector('.app-container').classList.remove('login-hidden');
+        }
+    }
+
+    function initLoginSystem() {
+        const loginBtn = document.getElementById('loginBtn');
+        const passwordInput = document.getElementById('loginPassword');
+        const perfilSelect = document.getElementById('loginPerfil');
+        const errorDiv = document.getElementById('loginError');
+        
+        let sessionTimeout = null;
+        let inactivityTimer = null;
+        let remainingTimeGlobal = TIEMPO_SESION_SEGUNDOS;
+        
+        function resetInactivityTimer() {
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            if (sessionTimeout) clearInterval(sessionTimeout);
             
-            if (tiempoTranscurrido < TIEMPO_SESION_SEGUNDOS) {
-                const perfilObj = {
-                    nombre: perfilData.nombre,
-                    visibleTabs: perfilData.visibleTabs,
-                    hiddenTabs: perfilData.hiddenTabs,
-                    showCleanCloudButton: perfilData.showCleanCloudButton,
-                    password: perfilData.nombre === 'administrativo' ? PERFILES.ADMINISTRATIVO.password : PERFILES.DIRECTIVO.password
-                };
+            if (currentUserProfile) {
+                remainingTimeGlobal = TIEMPO_SESION_SEGUNDOS;
+                updateTimerDisplay();
                 
-                currentUserProfile = perfilData.nombre;
-                remainingTime = TIEMPO_SESION_SEGUNDOS - Math.floor(tiempoTranscurrido);
-                aplicarPermisosPorPerfil(perfilObj);
+                sessionTimeout = setInterval(() => {
+                    if (remainingTimeGlobal > 0) {
+                        remainingTimeGlobal--;
+                        updateTimerDisplay();
+                        if (remainingTimeGlobal === 0) cerrarSesionPorInactividad();
+                    }
+                }, 1000);
+            }
+        }
+        
+        function updateTimerDisplay() {
+            let timerElement = document.getElementById('sessionTimer');
+            if (!timerElement && currentUserProfile) {
+                const timerDiv = document.createElement('div');
+                timerDiv.id = 'sessionTimer';
+                timerDiv.className = 'session-timer';
+                const minutosIniciales = Math.floor(TIEMPO_SESION_SEGUNDOS / 60);
+                const segundosIniciales = TIEMPO_SESION_SEGUNDOS % 60;
+                timerDiv.innerHTML = `⏱️ <span id="timerValue">${minutosIniciales.toString().padStart(2, '0')}:${segundosIniciales.toString().padStart(2, '0')}</span>`;
+                document.body.appendChild(timerDiv);
+                timerElement = timerDiv;
+            }
+            
+            if (timerElement) {
+                const minutes = Math.floor(remainingTimeGlobal / 60);
+                const seconds = remainingTimeGlobal % 60;
+                const timerSpan = document.getElementById('timerValue');
+                if (timerSpan) timerSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            if (!currentUserProfile && timerElement) timerElement.remove();
+        }
+        
+        function cerrarSesionPorInactividad() {
+            if (currentUserProfile) {
+                if (sessionTimeout) clearInterval(sessionTimeout);
+                if (inactivityTimer) clearTimeout(inactivityTimer);
+                
+                alert(`⏰ Sesión expirada por inactividad (${TIEMPO_SESION_MINUTOS} minuto${TIEMPO_SESION_MINUTOS !== 1 ? 's' : ''}).`);
+                sessionStorage.removeItem('userProfile');
+                currentUserProfile = null;
+                mostrarModalLogin();
+                
+                const allTabs = document.querySelectorAll('.tab-btn');
+                allTabs.forEach(tab => tab.classList.remove('hidden-tab'));
+                const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
+                if (cleanCloudBtn) cleanCloudBtn.classList.remove('hidden');
+                
+                const timerElement = document.getElementById('sessionTimer');
+                if (timerElement) timerElement.remove();
+            }
+        }
+        
+        function setupInactivityListeners() {
+            const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+            events.forEach(event => {
+                document.removeEventListener(event, resetInactivityTimer);
+                document.addEventListener(event, resetInactivityTimer);
+            });
+        }
+        
+        function intentarLogin() {
+            const perfil = perfilSelect.value;
+            const password = passwordInput.value;
+            const perfilValido = verificarCredenciales(perfil, password);
+            
+            if (perfilValido) {
+                sessionStorage.setItem('userProfile', JSON.stringify({
+                    nombre: perfilValido.nombre,
+                    visibleTabs: perfilValido.visibleTabs,
+                    hiddenTabs: perfilValido.hiddenTabs,
+                    showCleanCloudButton: perfilValido.showCleanCloudButton,
+                    loginTime: Date.now()
+                }));
+                
+                currentUserProfile = perfilValido.nombre;
+                aplicarPermisosPorPerfil(perfilValido);
                 ocultarModalLogin();
+                errorDiv.style.display = 'none';
+                passwordInput.value = '';
+                
+                remainingTime = TIEMPO_SESION_SEGUNDOS;
                 updateTimerDisplay();
                 setupInactivityListeners();
                 resetInactivityTimer();
             } else {
-                sessionStorage.removeItem('userProfile');
+                errorDiv.textContent = '❌ Contraseña incorrecta.';
+                errorDiv.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+        
+        const savedProfile = sessionStorage.getItem('userProfile');
+        if (savedProfile) {
+            try {
+                const perfilData = JSON.parse(savedProfile);
+                const tiempoTranscurrido = (Date.now() - perfilData.loginTime) / 1000;
+                
+                if (tiempoTranscurrido < TIEMPO_SESION_SEGUNDOS) {
+                    const perfilObj = {
+                        nombre: perfilData.nombre,
+                        visibleTabs: perfilData.visibleTabs,
+                        hiddenTabs: perfilData.hiddenTabs,
+                        showCleanCloudButton: perfilData.showCleanCloudButton,
+                        password: perfilData.nombre === 'administrativo' ? PERFILES.ADMINISTRATIVO.password : PERFILES.DIRECTIVO.password
+                    };
+                    
+                    currentUserProfile = perfilData.nombre;
+                    remainingTime = TIEMPO_SESION_SEGUNDOS - Math.floor(tiempoTranscurrido);
+                    aplicarPermisosPorPerfil(perfilObj);
+                    ocultarModalLogin();
+                    updateTimerDisplay();
+                    setupInactivityListeners();
+                    resetInactivityTimer();
+                } else {
+                    sessionStorage.removeItem('userProfile');
+                    mostrarModalLogin();
+                }
+            } catch(e) {
                 mostrarModalLogin();
             }
-        } catch(e) {
+        } else {
             mostrarModalLogin();
         }
-    } else {
-        mostrarModalLogin();
+        
+        loginBtn.addEventListener('click', intentarLogin);
+        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') intentarLogin(); });
     }
-    
-    loginBtn.addEventListener('click', intentarLogin);
-    passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') intentarLogin();
-    });
-}
 
-// ==================== NUEVA FUNCIÓN: LIMPIAR NUBE ====================
     async function clearCloudData() {
         if (!supabaseClient) return alert("Supabase no disponible");
-       
         if (!confirm("⚠️ ¿Borrar TODA la información de la NUBE?\n\nEsta acción es irreversible.")) return;
-       
+        
         const progressMsg = document.createElement('div');
         progressMsg.style.cssText = 'position:fixed; top:20px; right:20px; background:#dc2626; color:white; padding:12px 20px; border-radius:8px; z-index:9999;';
         progressMsg.textContent = '🗑️ Limpiando nube...';
@@ -1499,12 +1600,12 @@ function initLoginSystem() {
         try {
             await supabaseClient.from('ap_reglas').delete().gt('clave_proveedor', '');
             await supabaseClient.from('ap_records').delete().gt('folio_entrada', '');
-           
+            
             progressMsg.style.background = '#15803d';
             progressMsg.textContent = '✅ Nube limpiada correctamente';
             setTimeout(() => progressMsg.remove(), 2500);
-           
-            await loadFromSupabase(); // recargar después de limpiar
+            
+            await loadFromSupabase();
         } catch (error) {
             console.error(error);
             progressMsg.textContent = '❌ Error: ' + error.message;
@@ -1516,18 +1617,14 @@ function initLoginSystem() {
         if (!supabaseClient) return false;
         
         try {
-            console.log("🔄 Forzando carga fresca desde Supabase...");
+            console.log("🔄 Cargando desde Supabase...");
 
-            // === 1. Siempre limpiar primero los datos locales ===
             databaseRecords = [];
             reglasRecords = [];
             filteredData = [];
             reglasFilteredData = [];
 
-            // === 2. Cargar Reglas ===
-            const { data: reglasData } = await supabaseClient
-                .from('ap_reglas')
-                .select('*');
+            const { data: reglasData } = await supabaseClient.from('ap_reglas').select('*');
             
             if (reglasData && reglasData.length > 0) {
                 reglasRecords = reglasData.map(r => ({
@@ -1540,7 +1637,6 @@ function initLoginSystem() {
             }
             await saveAllReglasToDB();
 
-            // === 3. Cargar Registros (paginado) ===
             let allRecords = [];
             let from = 0;
             const limit = 1000;
@@ -1572,24 +1668,21 @@ function initLoginSystem() {
                     zona: r.zona || '',
                     responsable: r.responsable || ''
                 }));
-            } else {
-                console.log("ℹ️ Supabase está vacío → app queda limpia");
             }
             
             await saveAllRecordsToDB();
 
-            // === 4. Actualizar toda la interfaz ===
             applyFiltersAndRender();
             applyReglasFiltersAndRender();
             renderizarConsolidado();
             updateDashboardStats();
 
-            console.log(`✅ Sincronizado correctamente: ${databaseRecords.length} registros`);
+            console.log(`✅ Sincronizado: ${databaseRecords.length} registros`);
             return true;
 
         } catch (error) {
-            console.error('Error cargando desde Supabase:', error);
-            alert("Error al cargar datos desde la nube: " + error.message);
+            console.error('Error:', error);
+            alert("Error al cargar datos: " + error.message);
             return false;
         }
     }
@@ -1618,7 +1711,6 @@ function initLoginSystem() {
     let reglasCurrentPage = 1;
     let reglasFilteredData = [];
 
-    // ==================== FUNCIÓN PARA APLICAR REGLAS A BASE DE DATOS ====================
     async function aplicarReglasABaseDeDatos() {
         if (reglasRecords.length === 0) return false;
         
@@ -1650,9 +1742,7 @@ function initLoginSystem() {
             }
         }
         
-        if (actualizados > 0) {
-            await saveAllRecordsToDB();
-        }
+        if (actualizados > 0) await saveAllRecordsToDB();
         return actualizados;
     }
 
@@ -1663,9 +1753,7 @@ function initLoginSystem() {
             const store = transaction.objectStore(STORE_NAME);
             const clearRequest = store.clear();
             clearRequest.onsuccess = () => {
-                for (const rec of databaseRecords) {
-                    store.add(rec);
-                }
+                for (const rec of databaseRecords) store.add(rec);
                 transaction.oncomplete = () => resolve();
                 transaction.onerror = () => reject(transaction.error);
             };
@@ -1680,9 +1768,7 @@ function initLoginSystem() {
             const store = transaction.objectStore(REGLAS_STORE_NAME);
             const clearRequest = store.clear();
             clearRequest.onsuccess = () => {
-                for (const rec of reglasRecords) {
-                    store.add(rec);
-                }
+                for (const rec of reglasRecords) store.add(rec);
                 transaction.oncomplete = () => resolve();
                 transaction.onerror = () => reject(transaction.error);
             };
@@ -1707,7 +1793,6 @@ function initLoginSystem() {
         };
     }
 
-    // ==================== FUNCIONES BASE DE DATOS PRINCIPAL ====================
     function openDB() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, 2);
@@ -1803,13 +1888,13 @@ function initLoginSystem() {
             const store = transaction.objectStore(STORE_NAME);
             let added = 0;
             transaction.oncomplete = async () => {
-            databaseRecords.push(...toAdd);
-            databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
-            uniqueValuesCache = {};
-            renderizarConsolidado();
-            await syncToSupabase(true);   // ← AUTO SYNC
-            resolve(added);
-        };
+                databaseRecords.push(...toAdd);
+                databaseRecords.sort((a, b) => compareDates(a.fechaEntrada, b.fechaEntrada));
+                uniqueValuesCache = {};
+                renderizarConsolidado();
+                await syncToSupabase(true);
+                resolve(added);
+            };
             transaction.onerror = () => reject(transaction.error);
             toAdd.forEach(rec => { store.add(rec); added++; });
         });
@@ -1835,7 +1920,6 @@ function initLoginSystem() {
         });
     }
 
-    // ==================== FUNCIONES REGLAS ====================
     function openReglasDB() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(REGLAS_DB_NAME, 1);
@@ -1874,14 +1958,14 @@ function initLoginSystem() {
             const transaction = reglasDB.transaction([REGLAS_STORE_NAME], 'readwrite');
             const store = transaction.objectStore(REGLAS_STORE_NAME);
             let added = 0;
-                    transaction.oncomplete = async () => {
-            reglasRecords.push(...toAdd);
-            reglasUniqueValuesCache = {};
-            await actualizarBaseDatosPorReglas();
-            renderizarConsolidado();
-            await syncToSupabase(true);   // ← AUTO SYNC
-            resolve(added);
-        };
+            transaction.oncomplete = async () => {
+                reglasRecords.push(...toAdd);
+                reglasUniqueValuesCache = {};
+                await actualizarBaseDatosPorReglas();
+                renderizarConsolidado();
+                await syncToSupabase(true);
+                resolve(added);
+            };
             transaction.onerror = () => reject(transaction.error);
             toAdd.forEach(rec => { store.add(rec); added++; });
         });
@@ -1893,7 +1977,7 @@ function initLoginSystem() {
             const transaction = reglasDB.transaction([REGLAS_STORE_NAME], 'readwrite');
             const store = transaction.objectStore(REGLAS_STORE_NAME);
             const request = store.clear();
-                        request.onsuccess = async () => { 
+            request.onsuccess = async () => { 
                 databaseRecords = []; 
                 uniqueValuesCache = {}; 
                 consolidadoAniosSeleccionados = [];
@@ -1901,14 +1985,13 @@ function initLoginSystem() {
                 consolidadoAniosDisponibles = [];
                 consolidadoMesesDisponibles = [];
                 renderizarConsolidado(); 
-                await syncToSupabase(true);   // ← AUTO SYNC
+                await syncToSupabase(true);
                 resolve(); 
             };
             request.onerror = () => reject(request.error);
         });
     }
 
-    // ==================== EXTRACCIÓN DE DATOS ====================
     const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
     
     function excelSerialToDate(serial) {
@@ -2084,7 +2167,7 @@ function initLoginSystem() {
                 if (added > 0) {
                     showFeedback(`✅ ${added} nuevos registros (Total: ${databaseRecords.length})`, "success");
                 } else {
-                    showFeedback(`⚠️ No se agregaron registros nuevos (todos duplicados)`, "warning");
+                    showFeedback(`⚠️ No se agregaron registros nuevos`, "warning");
                 }
             } else if (target === "reglas") {
                 const records = extractReglasFromRows(rows);
@@ -2093,9 +2176,9 @@ function initLoginSystem() {
                 applyReglasFiltersAndRender();
                 renderizarConsolidado();
                 if (added > 0) {
-                    showFeedback(`✅ ${added} nuevas reglas cargadas. Base de Datos actualizada automáticamente.`, "success");
+                    showFeedback(`✅ ${added} nuevas reglas cargadas.`, "success");
                 } else {
-                    showFeedback(`⚠️ No se agregaron reglas nuevas (todos duplicados por Clave Proveedor)`, "warning");
+                    showFeedback(`⚠️ No se agregaron reglas nuevas`, "warning");
                 }
             }
         } catch (err) {
@@ -2112,7 +2195,6 @@ function initLoginSystem() {
         }
     }
 
-    // ==================== FUNCIONES PARA FILTROS ====================
     function getUniqueValuesFromData(field, dataSource) {
         const vals = new Set();
         for (const r of dataSource) {
@@ -2160,7 +2242,8 @@ function initLoginSystem() {
             { key: 'responsable', label: 'RESPONSABLE' }
         ];
         
-        let html = '<table><thead><tr>';
+        let html = '<table><thead>';
+        html += '<tr>';
         for (const col of columns) {
             const hasFilter = currentFilters[col.key] && currentFilters[col.key].length > 0;
             html += `<th>
@@ -2248,7 +2331,6 @@ function initLoginSystem() {
         const pageData = reglasFilteredData.slice(start, end);
         const totalPages = Math.ceil(reglasFilteredData.length / PAGE_SIZE);
         
-        // CORREGIDO: Estructura de tabla HTML correcta
         let html = '<table><thead>';
         html += '<tr>';
         html += '<th>CLAVE PROVEEDOR</th>';
@@ -2303,10 +2385,7 @@ function initLoginSystem() {
     }
     
     function createFilterDropdown(field, label, rect, currentSelected, visibleData, isBaseDatos) {
-        if (activeDropdown) {
-            activeDropdown.remove();
-            activeDropdown = null;
-        }
+        if (activeDropdown) activeDropdown.remove();
         
         const values = getUniqueValuesFromData(field, visibleData);
         const selectedSet = new Set(currentSelected);
@@ -2352,42 +2431,27 @@ function initLoginSystem() {
         });
         
         dropdown.querySelector('#selectAllBtn').onclick = () => {
-            optionsContainer.querySelectorAll('.filter-option').forEach(opt => {
-                opt.querySelector('input').checked = true;
-            });
+            optionsContainer.querySelectorAll('.filter-option').forEach(opt => opt.querySelector('input').checked = true);
         };
         
         dropdown.querySelector('#clearAllBtn').onclick = () => {
-            optionsContainer.querySelectorAll('.filter-option').forEach(opt => {
-                opt.querySelector('input').checked = false;
-            });
+            optionsContainer.querySelectorAll('.filter-option').forEach(opt => opt.querySelector('input').checked = false);
         };
         
         dropdown.querySelector('#applyFilterBtn').onclick = () => {
             const selected = [];
-            optionsContainer.querySelectorAll('.filter-option input:checked').forEach(cb => {
-                selected.push(cb.value);
-            });
+            optionsContainer.querySelectorAll('.filter-option input:checked').forEach(cb => selected.push(cb.value));
             
             if (selected.length === 0 || selected.length === values.length) {
-                if (isBaseDatos) {
-                    delete currentFilters[field];
-                } else {
-                    delete reglasCurrentFilters[field];
-                }
+                if (isBaseDatos) delete currentFilters[field];
+                else delete reglasCurrentFilters[field];
             } else {
-                if (isBaseDatos) {
-                    currentFilters[field] = selected;
-                } else {
-                    reglasCurrentFilters[field] = selected;
-                }
+                if (isBaseDatos) currentFilters[field] = selected;
+                else reglasCurrentFilters[field] = selected;
             }
             closeDropdown();
-            if (isBaseDatos) {
-                applyFiltersAndRender();
-            } else {
-                applyReglasFiltersAndRender();
-            }
+            if (isBaseDatos) applyFiltersAndRender();
+            else applyReglasFiltersAndRender();
         };
         
         setTimeout(() => {
@@ -2496,7 +2560,6 @@ function initLoginSystem() {
         showFeedback(`✅ Exportadas ${reglasFilteredData.length} reglas`, "success");
     }
 
-    // ==================== INICIALIZACIÓN ====================
     function initDragAndDrop() {
         const dropzone = document.getElementById("dropzoneBatch");
         const fileInput = document.getElementById("fileBatchInput");
@@ -2696,9 +2759,7 @@ function initLoginSystem() {
                 const checkboxes = dropdown.querySelectorAll('#consolidadoAniosCheckboxList input[type="checkbox"]');
                 consolidadoAniosSeleccionados = [];
                 checkboxes.forEach(cb => {
-                    if (cb.checked) {
-                        consolidadoAniosSeleccionados.push(parseInt(cb.value));
-                    }
+                    if (cb.checked) consolidadoAniosSeleccionados.push(parseInt(cb.value));
                 });
                 dropdown.style.display = "none";
                 renderizarConsolidado();
@@ -2771,10 +2832,7 @@ function initLoginSystem() {
         for (const proveedor of proveedores) {
             datos[proveedor] = {};
             for (const mes of meses) {
-                datos[proveedor][mes] = {
-                    totales: 0,
-                    empatadas: 0
-                };
+                datos[proveedor][mes] = { totales: 0, empatadas: 0 };
             }
         }
         
@@ -2788,9 +2846,7 @@ function initLoginSystem() {
             datos[proveedor][mesKey].totales++;
             
             const generadoAP = (rec.generadoAP || "").toUpperCase();
-            if (generadoAP === "SI") {
-                datos[proveedor][mesKey].empatadas++;
-            }
+            if (generadoAP === "SI") datos[proveedor][mesKey].empatadas++;
         }
         
         return { datos, meses, proveedores };
@@ -2815,9 +2871,7 @@ function initLoginSystem() {
                 mesesSet.set(mes, orden);
             }
         }
-        const mesesOrdenados = Array.from(mesesSet.keys()).sort((a, b) => {
-            return mesesSet.get(a).localeCompare(mesesSet.get(b));
-        });
+        const mesesOrdenados = Array.from(mesesSet.keys()).sort((a, b) => mesesSet.get(a).localeCompare(mesesSet.get(b)));
         
         const mesesMostrar = mesesOrdenados.filter(m => consolidadoMesesSeleccionados.includes(m));
         
@@ -2838,9 +2892,7 @@ function initLoginSystem() {
                 if (mesKey === mes) {
                     totalesMes++;
                     const generadoAP = (rec.generadoAP || "").toUpperCase();
-                    if (generadoAP === "SI") {
-                        automaticasMes++;
-                    }
+                    if (generadoAP === "SI") automaticasMes++;
                 }
             }
             
@@ -2959,11 +3011,11 @@ function initLoginSystem() {
             let colorEfect = '#15803d';
             if (efectividad < 55) colorEfect = '#b91c1c';
             else if (efectividad < 75) colorEfect = '#e67e22';
-            html += `<td style="text-align:center; color:${colorEfect}; font-weight:500;" colspan="2">${efectividad.toFixed(2)}%<\/td>`;
+            html += `<td style="text-align:center; color:${colorEfect}; font-weight:500;" colspan="2">${efectividad.toFixed(2)}%</td>`;
         }
         if (mostrarAcumulado) {
             const acumuladoColorEfect = resumen.acumulado.efectividad < 55 ? '#b91c1c' : (resumen.acumulado.efectividad < 75 ? '#e67e22' : '#15803d');
-            html += `<td style="text-align:center; font-weight:600; color:${acumuladoColorEfect}; background:#e6f7ec;" colspan="2">${resumen.acumulado.efectividad.toFixed(2)}%<\/td>`;
+            html += `<td style="text-align:center; font-weight:600; color:${acumuladoColorEfect}; background:#e6f7ec;" colspan="2">${resumen.acumulado.efectividad.toFixed(2)}%</td>`;
         }
         html += '</tr>';
         
@@ -2995,14 +3047,12 @@ function initLoginSystem() {
                 mesesSet.set(mes, orden);
             }
         }
-        const meses = Array.from(mesesSet.keys()).sort((a, b) => {
-            return mesesSet.get(a).localeCompare(mesesSet.get(b));
-        });
+        const meses = Array.from(mesesSet.keys()).sort((a, b) => mesesSet.get(a).localeCompare(mesesSet.get(b)));
         
         consolidadoMesesDisponibles = meses;
         
         if (meses.length === 0) {
-            container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay meses disponibles para los años seleccionados</div>';
+            container.innerHTML = '<div style="padding: 8px 12px; color: #94a3b8;">No hay meses disponibles</div>';
             return;
         }
         
@@ -3024,17 +3074,13 @@ function initLoginSystem() {
         
         if (databaseRecords.length === 0) {
             container.innerHTML = '<div class="loading">No hay datos cargados en Base de Datos</div>';
-            if (resumenContainer) {
-                resumenContainer.innerHTML = '<div class="loading">No hay datos cargados</div>';
-            }
+            if (resumenContainer) resumenContainer.innerHTML = '<div class="loading">No hay datos cargados</div>';
             actualizarTextoBtnAnios();
             actualizarTextoBtnMeses();
             return;
         }
         
-        if (consolidadoAniosSeleccionados.length === 0) {
-            consolidadoAniosSeleccionados = obtenerAniosUnicos();
-        }
+        if (consolidadoAniosSeleccionados.length === 0) consolidadoAniosSeleccionados = obtenerAniosUnicos();
         
         actualizarTextoBtnAnios();
         actualizarTextoBtnMeses();
@@ -3057,14 +3103,11 @@ function initLoginSystem() {
                 mesesSet.set(mes, orden);
             }
         }
-        const mesesUnicos = Array.from(mesesSet.keys()).sort((a, b) => {
-            return mesesSet.get(a).localeCompare(mesesSet.get(b));
-        });
+        const mesesUnicos = Array.from(mesesSet.keys()).sort((a, b) => mesesSet.get(a).localeCompare(mesesSet.get(b)));
         
         consolidadoMesesDisponibles = mesesUnicos;
         
-        if (consolidadoMesesSeleccionados.length === 0 || 
-            !consolidadoMesesSeleccionados.some(m => consolidadoMesesDisponibles.includes(m))) {
+        if (consolidadoMesesSeleccionados.length === 0 || !consolidadoMesesSeleccionados.some(m => consolidadoMesesDisponibles.includes(m))) {
             consolidadoMesesSeleccionados = [...consolidadoMesesDisponibles];
         }
         consolidadoMesesTempSeleccionados = [...consolidadoMesesSeleccionados];
@@ -3103,26 +3146,20 @@ function initLoginSystem() {
         html += '<tbody>';
         for (const proveedor of proveedores) {
             html += '<tr>';
-            html += `<td style="text-align:left; font-weight:500;">${escapeHtml(proveedor)}<\/td>`;
+            html += `<td style="text-align:left; font-weight:500;">${escapeHtml(proveedor)}</td>`;
             for (const mes of mesesMostrar) {
                 const data = datos[proveedor][mes] || { totales: 0, empatadas: 0 };
                 const totales = data.totales;
                 const empatadas = data.empatadas;
                 const ersSinXml = totales - empatadas;
                 let porcentaje = 0;
-                if (totales > 0) {
-                    porcentaje = (ersSinXml / totales) * 100;
-                }
+                if (totales > 0) porcentaje = (ersSinXml / totales) * 100;
                 const porcentajeFormateado = porcentaje.toFixed(2) + '%';
                 
                 let porcentajeStyle = '';
-                if (porcentaje > 45) {
-                    porcentajeStyle = 'style="background:#fee2e2; color:#b91c1c; font-weight:bold;"';
-                } else if (porcentaje > 25) {
-                    porcentajeStyle = 'style="background:#fff3e0; color:#e67e22; font-weight:bold;"';
-                } else {
-                    porcentajeStyle = 'style="background:#e6f7ec; color:#15803d; font-weight:bold;"';
-                }
+                if (porcentaje > 45) porcentajeStyle = 'style="background:#fee2e2; color:#b91c1c; font-weight:bold;"';
+                else if (porcentaje > 25) porcentajeStyle = 'style="background:#fff3e0; color:#e67e22; font-weight:bold;"';
+                else porcentajeStyle = 'style="background:#e6f7ec; color:#15803d; font-weight:bold;"';
                 
                 html += `<td>${totales}</td>`;
                 html += `<td>${empatadas}</td>`;
@@ -3195,9 +3232,7 @@ function initLoginSystem() {
                 const checkboxes = dropdown.querySelectorAll('#consolidadoMesesCheckboxList input[type="checkbox"]');
                 consolidadoMesesSeleccionados = [];
                 checkboxes.forEach(cb => {
-                    if (cb.checked) {
-                        consolidadoMesesSeleccionados.push(cb.value);
-                    }
+                    if (cb.checked) consolidadoMesesSeleccionados.push(cb.value);
                 });
                 dropdown.style.display = "none";
                 renderizarConsolidado();
@@ -3206,7 +3241,6 @@ function initLoginSystem() {
         }
     }
    
-    // ==================== INICIALIZACIÓN PRINCIPAL ====================
     async function init() {
         initSupabase();
         
@@ -3216,7 +3250,6 @@ function initLoginSystem() {
         await loadAllRecords();
         await loadAllReglas();
         
-        // === CARGA AUTOMÁTICA DESDE SUPABASE ===
         console.log("🔄 Cargando datos desde Supabase...");
         await loadFromSupabase();
         
@@ -3235,7 +3268,6 @@ function initLoginSystem() {
         updateDashboardStats();
         renderizarConsolidado();
         
-        // Botones existentes
         document.getElementById('clearFiltersBtn')?.addEventListener('click', clearAllFilters);
         document.getElementById('deleteDatabaseBtn')?.addEventListener('click', deleteDatabase);
         document.getElementById('exportDataBtn')?.addEventListener('click', exportToExcel);
@@ -3243,7 +3275,6 @@ function initLoginSystem() {
         document.getElementById('deleteReglasDatabaseBtn')?.addEventListener('click', deleteReglasDatabase);
         document.getElementById('exportReglasBtn')?.addEventListener('click', exportReglasToExcel);
         
-        // === BOTÓN LIMPIAR NUBE ===
         const headerDiv = document.querySelector('.header > div');
         if (headerDiv) {
             const cleanBtn = document.createElement('button');
@@ -3257,31 +3288,29 @@ function initLoginSystem() {
         inicializarDropdownAnios();
         inicializarDropdownMeses();
         
-        console.log("🚀 App iniciada con sincronización automática");
+        console.log("🚀 App iniciada");
     }
    
-// Botón de cerrar sesión
-// Botón de cerrar sesión - ACTUALIZADO con limpieza de timers
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        if (sessionTimeout) clearInterval(sessionTimeout);
-        if (inactivityTimer) clearTimeout(inactivityTimer);
-        
-        sessionStorage.removeItem('userProfile');
-        currentUserProfile = null;
-        
-        const timerElement = document.getElementById('sessionTimer');
-        if (timerElement) timerElement.remove();
-        
-        mostrarModalLogin();
-        
-        const allTabs = document.querySelectorAll('.tab-btn');
-        allTabs.forEach(tab => tab.classList.remove('hidden-tab'));
-        const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
-        if (cleanCloudBtn) cleanCloudBtn.classList.remove('hidden');
-    });
-}
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            if (sessionTimeout) clearInterval(sessionTimeout);
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            
+            sessionStorage.removeItem('userProfile');
+            currentUserProfile = null;
+            
+            const timerElement = document.getElementById('sessionTimer');
+            if (timerElement) timerElement.remove();
+            
+            mostrarModalLogin();
+            
+            const allTabs = document.querySelectorAll('.tab-btn');
+            allTabs.forEach(tab => tab.classList.remove('hidden-tab'));
+            const cleanCloudBtn = document.getElementById('limpiarNubeBtn');
+            if (cleanCloudBtn) cleanCloudBtn.classList.remove('hidden');
+        });
+    }
 
     initLoginSystem();
     init();
